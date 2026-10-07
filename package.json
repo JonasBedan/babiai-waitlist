@@ -1,0 +1,18 @@
+{
+  "name": "ai-bez-obav-waitlist",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check:db": "node scripts/check-supabase.mjs",
+    "build:preview": "node scripts/build-preview.mjs"
+  },
+  "devDependencies": {
+    "vite": "8.3.3"
+  },
+  "dependencies": {
+    "lucide": "1.52.0"
+  }
+}

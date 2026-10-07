@@ -1,0 +1,24 @@
+# ZATÍM NEAKTIVNÍ. Až bude Supabase: přesunout do .github/workflows/waitlist-check.yml
+# (k nahrání je potřeba: gh auth refresh -h github.com -s workflow).
+# Denní kontrola formuláře + ochrana free projektu Supabase před pozastavením.
+# Když kontrola selže, GitHub pošle e-mail vlastníkovi repozitáře (Settings → Notifications → Actions).
+# Do Settings → Secrets and variables → Actions přidejte VITE_SUPABASE_URL a VITE_SUPABASE_ANON_KEY.
+name: Kontrola čekací listiny
+
+on:
+  schedule:
+    - cron: '17 6 * * *' # denně 6:17 UTC
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/check-supabase.mjs
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}

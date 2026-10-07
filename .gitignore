@@ -1,0 +1,7 @@
+node_modules
+dist
+.env
+.env.local
+.claude/settings.local.json
+dist-preview
+preview
