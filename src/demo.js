@@ -13,6 +13,19 @@ const TOP = 16;
 const HEADER = 104;
 const GAP = 184;
 const LESSON_NODE = NODES.findIndex((n) => n.t === 'Falešný vnuk volá');
+const LESSON_STEPS = LESSON.steps.length + 2; // hovory + pravidlo + shrnutí
+const newLesson = () => ({ step: 0, shown: 1, pick: null });
+const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Průvodce ukázkou: na co ukazuje (selektor) a co říká.
+const TOUR = [
+  { target: () => '.app-bar', text: 'Tady vidíte, jak daleko jste. Počítají se hotové i přeskočené kroky.' },
+  { target: (st) => `[data-i="${st.cur}"]`, text: 'Tahle lekce je teď na řadě. Klepnutím ji otevřete, zabere asi tři minuty.' },
+  {
+    target: (st) => `[data-i="${NODES.findIndex((n, i) => canSkipTo(st, i))}"]`,
+    text: 'Zamčené lekce můžete přeskočit. Krátký test ověří, že to už umíte.',
+  },
+];
 
 const STATE_ICON = { done: 'Check', current: 'Play', locked: 'Lock', skipped: 'SkipForward', bonus: 'Gift' };
 const FEEDBACK = {
@@ -25,7 +38,7 @@ const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 
 let root;
 let s; // stav z demo-logic.js
-let ui; // stav vzhledu: { view, lessonStep, lessonPick, dialog, unlocked }
+let ui; // stav vzhledu: { view, lesson: { step, shown, pick }, dialog, unlocked, tour }
 let returnTo = null; // kam vrátit focus po zavření dialogu
 let reported = null; // aby se skip_pass / skip_fail poslal jen jednou za test
 let onJoin = () => {};
@@ -42,10 +55,9 @@ export function initDemo(el, { onJoinClick }) {
 
 export function reset(focus = true) {
   s = initialState();
-  ui = { view: 'path', lessonStep: 'question', lessonPick: null, dialog: null, unlocked: [] };
+  ui = { view: 'path', lesson: newLesson(), dialog: null, unlocked: [], tour: 0 };
   returnTo = null;
-  render({ scroll: 0 });
-  if (focus) root.querySelector(`[data-i="${s.cur}"]`)?.focus({ preventScroll: true });
+  render({ scroll: 0, focus: focus ? '#tour-card' : null });
 }
 
 // ---------- vykreslení ----------
@@ -119,46 +131,85 @@ function optionList(options, picked, action) {
     .join('')}</div>`;
 }
 
+function lessonHeader(stepNo) {
+  const dots = Array.from({ length: LESSON_STEPS }, (_, k) =>
+    `<span class="${k < stepNo ? 'seg seg--done' : k === stepNo ? 'seg seg--now' : 'seg'}"></span>`).join('');
+  return `<div class="lesson-top">
+      <button type="button" class="link-btn" data-action="lesson-close">Zpět na cestu</button>
+      <p class="lesson-count">Krok ${stepNo + 1} z ${LESSON_STEPS}</p>
+    </div>
+    <div class="segs" aria-hidden="true">${dots}</div>`;
+}
+
 function lessonView() {
-  const back = `<button type="button" class="link-btn" data-action="lesson-close">Zpět na cestu</button>`;
-  if (ui.lessonStep === 'question') {
-    const pick = ui.lessonPick;
-    const opt = pick !== null ? LESSON.options[pick] : null;
-    return `<div class="lesson">${back}
+  const L = ui.lesson;
+  if (typeof L.step === 'number') {
+    const step = LESSON.steps[L.step];
+    const lines = step.lines.slice(0, L.shown);
+    const allShown = L.shown >= step.lines.length;
+    const opt = L.pick !== null ? step.o[L.pick] : null;
+    const last = L.step === LESSON.steps.length - 1;
+    return `<div class="lesson">${lessonHeader(L.step)}
       <p class="eyebrow" id="lesson-start" tabindex="-1">Lekce · ${esc(NODES[LESSON_NODE].t)}</p>
-      <div class="call-card">
-        <p class="call-label">${icon('Phone', 22)}Volá neznámé číslo</p>
-        <p class="call-quote">${esc(LESSON.scenario)}</p>
+      ${step.note ? `<p class="call-note">${esc(step.note)}</p>` : ''}
+      <div class="call">
+        <div class="call-head">
+          <span class="call-avatar">${icon('Phone', 24)}</span>
+          <div><p class="call-name">${esc(LESSON.caller)}</p>
+          <p class="call-sub">${L.step === 0 ? 'Příchozí hovor' : 'Volá znovu'}</p></div>
+        </div>
+        <ol class="bubbles" aria-label="Co říká volající">
+          ${lines.map((l, k) => `<li class="bubble${k === L.shown - 1 && L.shown > 1 ? ' bubble--new' : ''}" ${k === L.shown - 1 ? 'id="bubble-last" tabindex="-1"' : ''}>„${esc(l)}“</li>`).join('')}
+        </ol>
       </div>
-      <h3 class="lesson-q" id="lesson-q">${esc(LESSON.question)}</h3>
-      ${optionList(LESSON.options, pick, 'lesson-answer')}
-      ${opt ? feedbackBox(opt, 'lesson-fb') : ''}
-      ${opt ? (opt.k === 'safe'
-        ? `<button type="button" class="btn btn-primary btn-block" data-action="lesson-rule">Dál</button>`
-        : `<button type="button" class="btn btn-secondary btn-block" data-action="lesson-again">Zkusit jinou odpověď</button>`) : ''}
+      ${!allShown ? `<button type="button" class="btn btn-secondary btn-block" data-action="lesson-more">Poslouchat dál</button>` : `
+        <h3 class="lesson-q" id="lesson-q" tabindex="-1">${esc(step.q)}</h3>
+        ${optionList(step.o, L.pick, 'lesson-answer')}
+        ${opt ? feedbackBox(opt, 'lesson-fb') : ''}
+        ${opt ? (opt.k === 'safe'
+          ? `<button type="button" class="btn btn-primary btn-block" data-action="lesson-next">${last ? 'Na pravidlo' : 'Co se stane dál'}</button>`
+          : `<button type="button" class="btn btn-secondary btn-block" data-action="lesson-again">Zkusit jinou odpověď</button>`) : ''}`}
     </div>`;
   }
-  if (ui.lessonStep === 'rule') {
-    return `<div class="lesson">${back}
+  if (L.step === 'rule') {
+    return `<div class="lesson">${lessonHeader(LESSON.steps.length)}
       <p class="eyebrow">Pravidlo z lekce</p>
       <div class="rule-card rule-card--small" tabindex="-1" id="lesson-rule">
         <span class="rule-icon">${icon('PhoneOff', 32)}</span>
         <p class="rule-lines">${LESSON.rule.map((r) => `<span>${esc(r)}</span>`).join('')}</p>
       </div>
+      <p>Funguje to vždycky: když volá opravdu on, telefon zvedne. Když ne, právě jste zastavili podvod.</p>
       <button type="button" class="btn btn-primary btn-block" data-action="lesson-finish">Dokončit lekci</button>
     </div>`;
   }
   // Lekce hotová
   const unlocked = ui.unlocked.map((i) => NODES[i].t);
-  return `<div class="lesson lesson-done">
+  const cont = `<button type="button" class="btn btn-primary btn-block" data-action="lesson-close">Pokračovat na cestu</button>`;
+  return `<div class="lesson lesson-done">${lessonHeader(LESSON_STEPS - 1)}
     <span class="done-icon">${icon('CircleCheck', 56)}</span>
     <h3 id="lesson-done" tabindex="-1">Lekce hotová</h3>
-    <p>Pamatujte si: zavěste a zavolejte zpátky na číslo, které znáte.</p>
+    <div class="takeaways">
+      <p class="eyebrow">Co si odnášíte</p>
+      <ul>${LESSON.takeaways.map((x) => `<li>${icon('Check', 22)}<span>${esc(x)}</span></li>`).join('')}</ul>
+    </div>
     ${unlocked.length ? `<div class="unlock-box">
         <p class="unlock-title">${icon('Gift', 26)}Odemklo se: ${esc(unlocked.join(', '))}</p>
-        <button type="button" class="btn btn-primary btn-block" data-action="lesson-close">Pokračovat na cestu</button>
-      </div>` : `<button type="button" class="btn btn-primary btn-block" data-action="lesson-close">Pokračovat na cestu</button>`}
+        ${cont}
+      </div>` : cont}
   </div>`;
+}
+
+function tourView() {
+  const k = ui.tour;
+  const last = k === TOUR.length - 1;
+  return `<section class="tour" id="tour-card" tabindex="-1" aria-labelledby="tour-title">
+      <p class="tour-count" id="tour-title">Průvodce · ${k + 1} ze ${TOUR.length}</p>
+      <p class="tour-text" aria-live="polite">${esc(TOUR[k].text)}</p>
+      <div class="tour-actions">
+        <button type="button" class="btn btn-primary" data-action="tour-next">${last ? 'Vyzkoušet' : 'Další'}</button>
+        ${last ? '' : '<button type="button" class="link-btn" data-action="tour-end">Přeskočit průvodce</button>'}
+      </div>
+    </section>`;
 }
 
 function sheetView() {
@@ -234,11 +285,13 @@ function dialogView() {
     <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title">${body}</div>`;
 }
 
-function render({ focus, scroll } = {}) {
+function render({ focus, scroll, anim } = {}) {
   const prevScroll = root.querySelector('.screen-scroll')?.scrollTop ?? 0;
   const p = progress(s);
   const modal = s.sheet ? sheetView() : ui.dialog ? dialogView() : '';
-  root.innerHTML = `<div class="screen">
+  const tour = ui.tour !== null && ui.view === 'path' && !modal;
+  root.innerHTML = `<div class="screen"${anim ? ` data-anim="${anim}"` : ''}>
+      ${tour ? tourView() : ''}
       <div class="app-bar" ${modal ? 'inert' : ''}>
         <p class="app-title">${ui.view === 'path' ? 'Vaše cesta' : 'Lekce'}</p>
         <p class="app-progress">Hotovo ${p.done} z ${p.total}${p.skipped ? `, přeskočeno ${p.skipped}` : ''}</p>
@@ -253,17 +306,36 @@ function render({ focus, scroll } = {}) {
   scroller.scrollTop = scroll ?? prevScroll;
   setPageInert(!!modal);
 
+  if (tour) {
+    const target = root.querySelector(TOUR[ui.tour].target(s));
+    if (target) {
+      target.classList.add('tour-target');
+      if (scroller.contains(target)) scrollToShow(scroller, target, 0.25);
+    }
+  }
+
   const el = focus ? root.querySelector(focus) : modal ? root.querySelector('.sheet .btn, .dialog .btn, [role="dialog"] .choice') : null;
   if (el) {
     el.focus({ preventScroll: true });
-    if (scroller.contains(el)) keepVisible(scroller, el);
+    if (scroller.contains(el)) keepVisible(scroller, el, anim === 'skip');
   }
 }
 
-function keepVisible(scroller, el) {
+function keepVisible(scroller, el, smooth) {
   const r = el.getBoundingClientRect();
   const sr = scroller.getBoundingClientRect();
-  if (r.top < sr.top || r.bottom > sr.bottom) scroller.scrollTop += r.top - sr.top - sr.height / 3;
+  if (r.top < sr.top || r.bottom > sr.bottom) {
+    if (smooth && !reduceMotion()) {
+      // Krátce ukázat starou pozici a pak plynule sjet na nový cíl, ať je skok vidět.
+      requestAnimationFrame(() => scroller.scrollBy({ top: r.top - sr.top - sr.height / 3, behavior: 'smooth' }));
+    } else scroller.scrollTop += r.top - sr.top - sr.height / 3;
+  }
+}
+
+function scrollToShow(scroller, el, at) {
+  const r = el.getBoundingClientRect();
+  const sr = scroller.getBoundingClientRect();
+  scroller.scrollTop += r.top - sr.top - sr.height * at;
 }
 
 // Modální dialog: zbytek stránky je po dobu dialogu neaktivní (inert), focus se vrátí na původní prvek.
@@ -297,29 +369,36 @@ function onKey(e) {
   else if (ui.dialog) act('dialog-close');
 }
 
+function endTour(reason) {
+  if (ui.tour === null) return;
+  track('demo_tour', { step: ui.tour + 1, end: reason });
+  ui.tour = null;
+}
+
 function tapNode(i) {
   const st = nodeState(s, i);
+  endTour('tap');
   returnTo = `[data-i="${i}"]`;
   if (canSkipTo(s, i)) {
     s = openSheet(s, i);
     reported = null;
     track('skip_open', { target: NODES[i].t });
-    return render();
+    return render({ anim: 'sheet' });
   }
   if (st === 'locked') {
     ui.dialog = { type: 'opt-locked', i };
-    return render();
+    return render({ anim: 'dialog' });
   }
   if (i === LESSON_NODE && st === 'current') return openLesson();
   ui.dialog = { type: 'full', i };
   track('demo_locked_tap', { node: NODES[i].t });
-  render();
+  render({ anim: 'dialog' });
 }
 
 function openLesson() {
   s = closeSheet(s);
-  ui = { ...ui, view: 'lesson', lessonStep: 'question', lessonPick: null, dialog: null };
-  render({ scroll: 0, focus: '#lesson-start' });
+  ui = { ...ui, view: 'lesson', lesson: newLesson(), dialog: null, tour: null };
+  render({ scroll: 0, focus: '#lesson-start', anim: 'screen' });
 }
 
 function act(action, k) {
@@ -361,37 +440,57 @@ function act(action, k) {
     case 'skip-confirm': {
       const t = NODES[s.sheet.target].t;
       s = confirmSkip(s);
-      render({ focus: `[data-i="${s.cur}"]` });
+      render({ focus: `[data-i="${s.cur}"]`, anim: 'skip' });
       announce(`Skočili jste na „${t}“. Přeskočené kroky zůstávají na cestě.`);
       break;
     }
     case 'lesson-open':
       openLesson();
       break;
+    case 'tour-next':
+      if (ui.tour === TOUR.length - 1) {
+        endTour('done');
+        render({ focus: `[data-i="${s.cur}"]` });
+      } else {
+        ui.tour++;
+        render({ focus: '#tour-card' });
+      }
+      break;
+    case 'tour-end':
+      endTour('skip');
+      render({ focus: `[data-i="${s.cur}"]` });
+      break;
+    case 'lesson-more':
+      ui.lesson.shown++;
+      render({ focus: '#bubble-last' });
+      break;
     case 'lesson-answer':
-      ui.lessonPick = k;
+      ui.lesson.pick = k;
       render({ focus: '#lesson-fb' });
       break;
     case 'lesson-again':
-      ui.lessonPick = null;
-      render({ focus: '.lesson .choice' });
+      ui.lesson.pick = null;
+      render({ focus: '#lesson-q' });
       break;
-    case 'lesson-rule':
-      ui.lessonStep = 'rule';
-      render({ scroll: 0, focus: '#lesson-rule' });
+    case 'lesson-next': {
+      const n = ui.lesson.step + 1;
+      ui.lesson = n < LESSON.steps.length ? newLesson() : { step: 'rule' };
+      if (n < LESSON.steps.length) ui.lesson.step = n;
+      render({ scroll: 0, focus: n < LESSON.steps.length ? '#lesson-start' : '#lesson-rule', anim: 'screen' });
       break;
+    }
     case 'lesson-finish': {
       const before = s.cur;
       s = completeCurrent(s);
       ui.unlocked = NODES.map((_, i) => i).filter((i) => NODES[i].opt && i > before && i < s.cur);
-      ui.lessonStep = 'done';
+      ui.lesson = { step: 'done' };
       track('lesson_done', { lesson: NODES[before].t });
-      render({ scroll: 0, focus: '#lesson-done' });
+      render({ scroll: 0, focus: '#lesson-done', anim: 'done' });
       break;
     }
     case 'lesson-close':
-      ui = { ...ui, view: 'path', lessonStep: 'question', lessonPick: null };
-      render({ scroll: 0, focus: `[data-i="${s.cur}"]` });
+      ui = { ...ui, view: 'path', lesson: newLesson() };
+      render({ scroll: 0, focus: `[data-i="${s.cur}"]`, anim: 'skip' });
       break;
   }
 }

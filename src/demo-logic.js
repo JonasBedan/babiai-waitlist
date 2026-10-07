@@ -27,41 +27,73 @@ export const STATE_LABEL = {
 };
 export const REQUIRED = NODES.filter((n) => !n.opt).length;
 
-// Test pro skok dopředu. Pro skutečný produkt mají otázky odpovídat přeskočeným lekcím.
+// Test pro skok dopředu. Otázky odpovídají lekcím, které se přeskakují (hlas, video, banka).
 // Správná odpověď má k === 'safe'. Projde jen ten, kdo odpoví správně na všechny.
 export const QUESTIONS = [
   {
-    q: 'Volá vám „vnuk“ z neznámého čísla a chce hned peníze. Co uděláte?',
+    q: 'Na displeji svítí „Petra“, číslo vaší dcery. V telefonu je slyšet její pláč: měla nehodu a zadržela ji policie. Pak hovor převezme „advokát“ a chce dnes 120 000 Kč na kauci. Co uděláte?',
     o: [
-      { t: 'Pošlu je. Zní přesně jako on.', k: 'danger', title: 'Pozor, tohle je past.', fb: 'Hlas se dá napodobit z krátké nahrávky, třeba z videa na Facebooku. Že zní povědomě, nic nedokazuje.' },
-      { t: 'Zavěsím a zavolám mu na číslo, které mám uložené.', k: 'safe', title: 'Správně.', fb: 'Když to byl opravdu vnuk, telefon zvedne. Když ne, právě jste zastavili podvod.' },
-      { t: 'Zeptám se ho na něco, co ví jen on.', k: 'partial', title: 'Dobrý nápad, ale nestačí.', fb: 'Podvodník toho o rodině vyčte z internetu. Jistější je zavěsit a zavolat zpátky.' },
+      { t: 'Zeptám se advokáta na jméno a číslo kanceláře a zavolám mu tam zpátky.', k: 'partial', title: 'Dobrý nápad, ale nestačí.', fb: 'Číslo vám nadiktuje sám volající a zvedne ho jeho komplic. Ověřujte jen přes čísla, která jste si uložili sami.' },
+      { t: 'Zavěsím a zavolám Petře sama, na číslo z kontaktů.', k: 'safe', title: 'Správně.', fb: 'Číslo na displeji se dá podvrhnout a telefon pak ukáže jméno, které máte uložené. Když zavoláte vy, dovoláte se opravdu Petře.' },
+      { t: 'Volá z Petřina čísla a je to její hlas. Peníze připravím.', k: 'danger', title: 'Pozor, tohle je past.', fb: 'Podvodníci umí podvrhnout číslo na displeji a AI napodobí hlas z pár vteřin videa. Ani jedno samo nic nedokazuje.' },
     ],
   },
   {
-    q: 'Hlas zní přesně jako váš vnuk. Co z toho plyne?',
+    q: 'Na Facebooku vidíte video: známý moderátor zpráv doporučuje investiční platformu, která „garantuje“ 8 % měsíčně. Hlas i pohyb úst sedí. Pod videem jsou stovky nadšených komentářů. Co z toho plyne?',
     o: [
-      { t: 'Že volá opravdu on.', k: 'danger', title: 'Pozor, tohle je past.', fb: 'Hlas umí počítač napodobit. Povědomý hlas nic neprokazuje.' },
-      { t: 'Nic. Na hlas se spolehnout nemůžu.', k: 'safe', title: 'Správně.', fb: 'Dobrá kopie hlasu se často nedá od pravého poznat. Rozhoduje ověření zpětným hovorem.' },
-      { t: 'Že má jen nachlazení.', k: 'danger', title: 'Pozor, to je výmluva.', fb: 'Právě takovou výmluvou podvodník vysvětlí, proč hlas zní trochu jinak.' },
+      { t: 'Takhle dobře se video zfalšovat nedá. Za zkoušku malou částkou nic nedám.', k: 'danger', title: 'Pozor, tohle je past.', fb: 'AI dnes vyrobí přesvědčivé video s hlasem i mimikou kohokoli známého. A malá vložená částka je u investičních podvodů jen první krok.' },
+      { t: 'Zkontroluju komentáře a recenze, jestli to lidem opravdu funguje.', k: 'partial', title: 'Rozumná myšlenka, ale tady nepomůže.', fb: 'Komentáře i recenze často píšou falešné účty stejných podvodníků. Spolehlivější je zeptat se, kdo nabídku skutečně dělá.' },
+      { t: 'Nic. Video může být vyrobené AI a garantovaný vysoký výnos je sám o sobě varování.', k: 'safe', title: 'Správně.', fb: 'Žádná poctivá investice neslibuje jistý vysoký výnos. Známá tvář ve videu nic nedokazuje, AI ji umí napodobit.' },
     ],
   },
   {
-    q: 'Volající říká: „Hned to udělej a nikomu to neříkej.“ Co to znamená?',
+    q: 'Volá „bezpečnostní oddělení“ vaší banky. Zná vaše jméno i poslední čtyři čísla karty. Někdo prý právě zkouší vybrat vaše peníze a abyste o ně nepřišli, máte je hned převést na „bezpečný účet“. Co uděláte?',
     o: [
-      { t: 'Podvodník tlačí na spěch a tajnost.', k: 'safe', title: 'Správně.', fb: 'Spěch a tajemství jsou typické znaky podvodu. Skutečný vnuk by vám dal čas.' },
-      { t: 'Opravdu to spěchá, musím poslechnout.', k: 'danger', title: 'Pozor, tohle je past.', fb: 'Právě spěch má zabránit tomu, abyste si to ověřili.' },
-      { t: 'Pošlu aspoň polovinu.', k: 'danger', title: 'Pozor, tohle je past.', fb: 'Kdo platí část, přijde o část. Zavěste a zavolejte zpátky.' },
+      { t: 'Zavěsím a zavolám do banky sama, na číslo z karty nebo z bankovní aplikace.', k: 'safe', title: 'Správně.', fb: 'Banka po vás nikdy nebude chtít převádět peníze na jiný účet. Když zavoláte vy na oficiální číslo, víte, s kým mluvíte.' },
+      { t: 'Peníze převádět nebudu, ale kód z SMS, který mi právě přišel, mu potvrdím.', k: 'danger', title: 'Pozor, tohle je past.', fb: 'Kód z SMS je klíč k vašemu účtu. Kdo ho zná, může poslat platbu za vás. Neříkejte ho nikomu, ani „bance“.' },
+      { t: 'Zná moje údaje, takže je z banky. Udělám, co říká.', k: 'danger', title: 'Pozor, tohle je past.', fb: 'Osobní údaje unikají a dají se koupit. Že je volající zná, nedokazuje, že volá banka. „Bezpečný účet“ neexistuje.' },
     ],
   },
 ];
 
-// Lekce "Falešný vnuk volá": scénář, volby se zpětnou vazbou, pravidlo.
+// Lekce "Falešný vnuk volá": hovor se odvíjí po větách, dvě rozhodnutí, pravidlo a shrnutí.
+// Každý krok: popis situace (note, nepovinné), věty volajícího (lines), otázka (q) a volby. Na další krok se jde jen po bezpečné volbě.
 export const LESSON = {
-  scenario: '„Babi, to jsem já, Tomáš. Měl jsem nehodu a potřebuju hned 40 000 Kč. Prosím, neříkej to mámě.“',
-  question: 'Co uděláte?',
-  options: QUESTIONS[0].o,
+  caller: 'Neznámé číslo',
+  steps: [
+    {
+      lines: [
+        'Babi? Ahoj, to jsem já, Tomáš.',
+        'Volám z cizího telefonu, ten můj se rozbil. Měl jsem nehodu, nic mi není, ale naboural jsem auto.',
+        'Ten pán chce hned 40 000 na opravu, jinak volá policii a přijdu o řidičák. Prosím, neříkej to mámě.',
+      ],
+      q: 'Hlas zní jako Tomáš, jen trochu přidušeně. Co uděláte?',
+      o: [
+        { t: 'Zeptám se ho, jak se jmenoval náš první pes. To ví jen on.', k: 'partial', title: 'Dobrý instinkt, ale nestačí.', fb: 'Jméno psa se dá najít na sociálních sítích. A když odpověď nezná, vymluví se: „Babi, teď ne, prosím.“ Kontrolní otázka podvodníka nezastaví.' },
+        { t: 'Řeknu, že mu hned zavolám zpátky, zavěsím a vytočím Tomáše z kontaktů.', k: 'safe', title: 'Správně.', fb: 'Zpětný hovor na uložené číslo je jediné spolehlivé ověření. Skutečný vnuk to pochopí.' },
+        { t: 'Domluvím se, že peníze předám jeho kamarádovi, který se pro ně staví.', k: 'danger', title: 'Pozor, tohle je past.', fb: 'Přesně tak to podvodníci dělají. „Kamarád“ nebo „kurýr“ je jejich komplic a peníze už neuvidíte.' },
+      ],
+    },
+    {
+      note: 'Zavěsili jste a Tomáš to nebere. Telefon za chvíli zazvoní znovu, zase z toho neznámého čísla.',
+      lines: [
+        'Babi, proč jsi to položila?! Říkám ti, že ten mobil je rozbitej, tam se mi nedovoláš!',
+        'Nemám čas, ten pán už vytáčí policii. Tak pošli aspoň dvacet, prosím tě.',
+      ],
+      q: 'Tlačí na vás a Tomášovi se nedovoláte. Co teď?',
+      o: [
+        { t: 'Pošlu aspoň polovinu, ať nemá problém s policií.', k: 'danger', title: 'Pozor, tohle je past.', fb: 'Kdo pošle polovinu, přijde o polovinu. A podvodník se ozve znovu s dalším důvodem.' },
+        { t: 'Zase zavěsím a zavolám jeho mámě nebo někomu z rodiny na uložené číslo.', k: 'safe', title: 'Správně.', fb: 'Když se nedovoláte jemu, ověřte to přes někoho, kdo ho zná. Spěch a „neříkej to mámě“ jsou typické znaky podvodu.' },
+        { t: 'Řeknu mu, ať mi pošle fotku nabouraného auta, pak uvěřím.', k: 'partial', title: 'Lepší než platit, ale nestačí.', fb: 'Fotku najde na internetu nebo ji vyrobí AI za pár vteřin. Ověřujte lidi, ne důkazy, které vám pošle volající.' },
+      ],
+    },
+  ],
   rule: ['Zavěste.', 'Zavolejte zpátky.', 'Na číslo, které máte v telefonu uložené.'],
+  takeaways: [
+    'Hlas lze napodobit z pár vteřin videa na sociálních sítích.',
+    'Spěch a „nikomu to neříkej“ jsou znaky podvodu.',
+    'Když se nedovoláte, ověřte to přes někoho z rodiny.',
+  ],
 };
 
 // ---------- stav ----------

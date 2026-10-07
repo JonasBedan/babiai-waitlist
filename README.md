@@ -55,6 +55,11 @@ Ověřte, že snippet v `src/track.js` odpovídá tomu, co Plausible aktuálně 
 - Double opt-in ano/ne – pak doplnit větu do `SUCCESS` v `src/form.js`
 - Ověřená statistika se zdrojem (volitelné, místo je v HTML komentáři v sekci Pravidlo)
 
+Obsah ukázky v `src/demo-logic.js` (testové otázky a lekce „Falešný vnuk volá“ jako hovor ve dvou krocích)
+je přepsaný na žádost autora: realistické situace (podvržené číslo, AI video s investicí, „bezpečný účet“).
+Logika (stavy, test, skok) se nezměnila. Před spuštěním nechte obsah zkontrolovat.
+Průvodce ukázkou (3 kroky) měří událost `demo_tour` s krokem a způsobem ukončení (`done`, `skip`, `tap`).
+
 Texty, které zadání nedalo a dopsal jsem je (zkontrolujte): chyba prázdného/neplatného e-mailu a chyba sítě
 (`src/form.js`), texty v liště testu, výsledek testu, dialog „Zatím zamčeno“, obrazovka „Lekce hotová“
 (`src/demo.js`), nadpis „Dáme vám vědět, až to bude hotové“ u druhého formuláře.
