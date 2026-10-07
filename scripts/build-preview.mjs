@@ -22,6 +22,6 @@ const index = inline(readFileSync('dist-preview/index.html', 'utf8'));
 // Hlavní stránku hosting obalí vlastní kostrou, takže bez doctype/html/head/body.
 const head = index.match(/<head>([\s\S]*)<\/head>/)[1];
 const body = index.match(/<body>([\s\S]*)<\/body>/)[1];
-writeFileSync('preview/index.html', head.replace(/<title>[^<]*<\/title>/, "<title>AI bez obav</title>").replace(/<meta charset[^>]*>\s*|<meta name="viewport"[^>]*>\s*/g, '') + body);
+writeFileSync('preview/index.html', head.replace(/<title>[^<]*<\/title>/, "<title>BabiAI</title>").replace(/<meta charset[^>]*>\s*|<meta name="viewport"[^>]*>\s*/g, '') + body);
 writeFileSync('preview/zasady.html', inline(readFileSync('dist-preview/zasady.html', 'utf8')));
 console.log('preview/ hotovo');

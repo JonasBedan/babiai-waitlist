@@ -1,4 +1,4 @@
-# AI bez obav – waitlist stránka
+# BabiAI – waitlist stránka
 
 Statická stránka (Vite, vanilla JS) podle `ZADANI.md`. Ukázka v telefonu používá `src/demo-logic.js` beze změny.
 
@@ -47,7 +47,7 @@ Ověřte, že snippet v `src/track.js` odpovídá tomu, co Plausible aktuálně 
 ## Co doplnit (hledejte `[DOPLNIT`, `[POTVRDIT`, `[E-MAIL]`, `[OVĚŘIT`)
 
 - Kritérium úspěchu (kolik e-mailů, do kdy, odkud) – zatím nikde
-- Název a doména (`AI bez obav` je v `index.html`, `zasady.html`, `public/og.png`), `VITE_SITE_URL`
+- Název a doména (`BabiAI` je v `index.html` a `zasady.html`), `VITE_SITE_URL`
 - Kontaktní e-mail, kdo za projektem stojí
 - Kolik zpráv maximálně pošlete
 - Odpovědi na FAQ (kromě „Kdy to bude hotové?“, kde je text ze zadání)
