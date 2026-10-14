@@ -8,7 +8,9 @@
       name="description"
       content="Krátké lekce v češtině, které naučí poznat falešný hovor, zprávu nebo video. Vyzkoušejte si ukázku a zapište se, dáme vám vědět, až bude aplikace hotová."
     />
-    <meta name="theme-color" content="#F6F0E4" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#F6F0E4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1A1916" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
     <meta property="og:type" content="website" />
@@ -28,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&family=Literata:wght@500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&family=Merriweather:wght@400;500;600;700&display=swap"
     />
     <link rel="stylesheet" href="/src/style.css" />
     <script type="module" src="/src/main.js"></script>
@@ -41,145 +43,128 @@
 
     <header class="site-header">
       <div class="wrap header-inner">
-        <a class="logo" href="./">BabiAI</a>
+        <a class="logo" href="./">Babi<span>AI</span></a>
+        <p class="masthead-note">Lekce pro seniory a&nbsp;jejich rodiny. Připravujeme.</p>
         <a class="btn btn-small" href="#zapis" data-jump-form>Zapsat se</a>
       </div>
     </header>
 
     <main id="obsah">
-      <!-- 2. Hero -->
-      <section class="hero wrap" aria-labelledby="hero-title">
-        <div class="hero-text">
-          <h1 id="hero-title">Podvodník dnes umí napodobit hlas vašeho vnuka.</h1>
-
-          <div class="audience" role="group" aria-label="Kdo tuto stránku čte">
-            <button type="button" class="audience-btn" data-audience="senior" aria-pressed="false">
-              Čtu to jako senior
-            </button>
-            <button type="button" class="audience-btn" data-audience="family" aria-pressed="false">
-              Hledám to pro rodiče
-            </button>
+      <!-- 2. Hero: vlevo zápis, vpravo ukázka -->
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-main">
+          <div class="hero-text">
+            <h1 id="hero-title">Podvodník dnes umí napodobit hlas vašeho&nbsp;vnuka.</h1>
+            <p class="lead" id="lead" aria-live="polite">
+              Krátké lekce v&nbsp;češtině, které naučí poznat falešný hovor, zprávu nebo video. Vyzkoušejte si ukázku přímo
+              tady.
+            </p>
           </div>
 
-          <p class="lead" id="lead" aria-live="polite">
-            Krátké lekce v češtině, které naučí poznat falešný hovor, zprávu nebo video. Vyzkoušejte si ukázku přímo
-            tady.
-          </p>
-        </div>
-
-        <div class="hero-phone">
-          <div id="demo" class="phone" aria-label="Ukázka aplikace" role="region"></div>
-          <p class="phone-caption">Vyzkoušejte si to. Klepněte na zamčenou lekci a zkuste skočit dopředu.</p>
-          <button type="button" class="btn btn-secondary" id="demo-reset">
-            <span data-icon="RotateCcw"></span>Začít ukázku znovu
-          </button>
-        </div>
-        <div class="hero-form" id="zapis" tabindex="-1">
-          <div data-waitlist="hero"></div>
-        </div>
-
-        <div class="hero-sms">
-          <figure class="sms-card">
-            <figcaption class="sms-label">SMS z neznámého čísla</figcaption>
-            <p class="sms-bubble">
-              Ahoj mami, rozbil se mi mobil, tohle je moje nové číslo. Pošleš mi dnes 18 500 Kč na fakturu? Zítra vrátím.
-            </p>
-            <div class="note note-warn">
-              <span class="note-icon" data-icon="TriangleAlert"></span>
-              <div>
-                <p class="note-title">Pozor, past</p>
-                <p>Takhle může vypadat podvod. Lekce vás naučí poznat podle čeho.</p>
+          <div class="hero-form" id="zapis" tabindex="-1">
+            <div class="audience" role="group" aria-labelledby="audience-q">
+              <p class="audience-q" id="audience-q">Kdo to čte?</p>
+              <div class="audience-opts">
+                <button type="button" class="audience-btn" data-audience="senior" aria-pressed="false">
+                  Čtu to jako senior
+                </button>
+                <button type="button" class="audience-btn" data-audience="family" aria-pressed="false">
+                  Hledám to pro rodiče
+                </button>
               </div>
             </div>
-          </figure>
+            <div data-waitlist="hero"></div>
+          </div>
         </div>
 
+        <div class="hero-stage">
+          <div class="stage-bar">
+            <p class="stage-bar-title">Ukázka aplikace</p>
+            <button type="button" class="btn btn-secondary stage-close">
+              <span data-icon="X"></span>Zavřít
+            </button>
+          </div>
+          <div class="phone-wrap">
+            <div id="demo" class="phone" aria-label="Ukázka aplikace" role="region"></div>
+            <button type="button" class="btn btn-primary stage-open">
+              <span data-icon="Play"></span>Vyzkoušet ukázku
+            </button>
+          </div>
+          <button type="button" class="link-btn stage-reset" id="demo-reset">
+            <span data-icon="RotateCcw" data-size="20"></span>Začít ukázku znovu
+          </button>
+        </div>
       </section>
 
       <!-- 3. Jak to funguje -->
       <section class="section wrap" aria-labelledby="how-title">
-        <h2 id="how-title">Jak to funguje</h2>
+        <h2 id="how-title" class="section-title">Jak to funguje</h2>
         <ol class="steps">
-          <li class="card step">
-            <span class="step-icon" data-icon="BookOpen"></span>
+          <li class="step">
             <h3>Krátké lekce</h3>
             <p>Tři až pět minut, jeden příběh, jedno pravidlo. Nic se nepamatuje nazpaměť.</p>
           </li>
-          <li class="card step">
-            <span class="step-icon" data-icon="Lock"></span>
+          <li class="step">
             <h3>Odemykání po krocích</h3>
-            <p>Hry a cvičení s AI se otevírají postupně, aby toho nebylo moc najednou.</p>
+            <p>Hry a&nbsp;cvičení s&nbsp;AI se otevírají postupně, aby toho nebylo moc najednou.</p>
           </li>
-          <li class="card step">
-            <span class="step-icon" data-icon="SkipForward"></span>
+          <li class="step">
             <h3>Přeskočte, co už umíte</h3>
-            <p>Krátký test a jdete dál. Přeskočené lekce zůstanou na cestě.</p>
+            <p>Krátký test a&nbsp;jdete dál. Přeskočené lekce zůstanou na cestě.</p>
           </li>
         </ol>
       </section>
 
-      <!-- 4. Pravidlo -->
-      <section class="section wrap" aria-labelledby="rule-title">
-        <div class="rule-card">
-          <h2 id="rule-title">Pravidlo, které chrání už dnes</h2>
-          <div class="rule-body">
-            <span class="rule-icon" data-icon="PhoneOff"></span>
-            <p class="rule-lines">
-              <span>Zavěste.</span>
-              <span>Zavolejte zpátky.</span>
-              <span>Na číslo, které máte v telefonu uložené.</span>
+      <!-- 4. Past a pravidlo -->
+      <section class="rule-band" aria-labelledby="rule-title">
+        <div class="wrap rule-inner">
+          <figure class="sms-card">
+            <figcaption class="sms-label">SMS z&nbsp;neznámého čísla</figcaption>
+            <p class="sms-bubble">
+              Ahoj mami, rozbil se mi mobil, <mark>tohle je moje nové číslo</mark>. Pošleš mi <mark class="nowrap">dnes 18&nbsp;500&nbsp;Kč</mark>
+              na fakturu? Zítra vrátím.
             </p>
+            <p class="sms-note">
+              Tohle je podvod. Podtržené jsou dvě věci, které by vás měly zastavit: nové číslo a&nbsp;peníze ještě dnes.
+            </p>
+          </figure>
+
+          <div class="rule">
+            <h2 id="rule-title" class="rule-kicker">Pravidlo, které chrání už dnes</h2>
+            <div class="rule-body">
+              <p class="rule-lines">
+                <span>Zavěste.</span>
+                <span>Zavolejte zpátky.</span>
+                <span>Na číslo, které máte v&nbsp;telefonu uložené.</span>
+              </p>
+            </div>
+            <p class="rule-foot">Platí i&nbsp;pro zprávy. Neodpovídejte na nové číslo, napište na to, které znáte.</p>
           </div>
-          <p class="rule-foot">Platí i pro zprávy. Neodpovídejte na nové číslo, napište na to, které znáte.</p>
         </div>
         <!-- Místo pro ověřenou statistiku: DOPLNIT včetně zdroje (sekce 10 zadání). Bez zdroje nic nezobrazovat. -->
       </section>
 
       <!-- 5. Pro koho -->
       <section class="section wrap" aria-labelledby="who-title">
-        <h2 id="who-title">Pro koho</h2>
+        <h2 id="who-title" class="section-title">Pro koho</h2>
         <div class="who">
-          <div class="card">
-            <span class="step-icon" data-icon="Users"></span>
+          <div class="who-col">
             <h3>Pro seniory</h3>
-            <p>Velké písmo, jedna věc na obrazovce a žádné složité výrazy. Můžete se vrátit, kdykoli chcete.</p>
+            <p>Velké písmo, jedna věc na obrazovce a&nbsp;žádné složité výrazy. Můžete se vrátit, kdykoli chcete.</p>
           </div>
-          <div class="card">
-            <span class="step-icon" data-icon="ShieldCheck"></span>
+          <div class="who-col">
             <h3>Pro rodinu</h3>
-            <p>Nemusíte rodiče nic učit sami. Ukažte jim aplikaci a zeptejte se, co si z lekce pamatují.</p>
+            <p>Nemusíte rodiče nic učit sami. Ukažte jim aplikaci a&nbsp;zeptejte se, co si z&nbsp;lekce pamatují.</p>
           </div>
         </div>
         <p class="org-line">
-          <span data-icon="Building2"></span>
-          <span>Knihovna, klub seniorů nebo domov? Napište nám na <a href="mailto:[E-MAIL]">[E-MAIL]</a>.</span>
+          Knihovna, klub seniorů nebo domov? Napište nám na <a href="mailto:[E-MAIL]">[E-MAIL]</a>.
         </p>
       </section>
 
-      <!-- 6. Poctivě o stavu projektu -->
-      <section class="section wrap" aria-labelledby="honest-title">
-        <div class="note note-info honest">
-          <span class="note-icon" data-icon="Info"></span>
-          <div>
-            <h2 id="honest-title" class="note-title">Poctivě o stavu projektu</h2>
-            <p>
-              Aplikace se teprve staví. To, co vidíte nahoře, je ukázka a umí jen pár lekcí. AI se může mýlit a žádná
-              aplikace nenahradí zdravý rozum. Nejsme banka ani policie. [DOPLNIT: kdo za projektem stojí]
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 7. Formulář podruhé a FAQ -->
-      <section class="section wrap form-again" aria-labelledby="again-title">
-        <h2 id="again-title">Dáme vám vědět, až to bude hotové</h2>
-        <div class="form-again-inner" id="zapis-2" tabindex="-1">
-          <div data-waitlist="bottom"></div>
-        </div>
-      </section>
-
+      <!-- 7. FAQ a závěrečná výzva (formulář je jen jeden, nahoře) -->
       <section class="section wrap" aria-labelledby="faq-title">
-        <h2 id="faq-title">Časté otázky</h2>
+        <h2 id="faq-title" class="section-title">Časté otázky</h2>
         <div class="faq">
           <details>
             <summary>Kolik to bude stát?</summary>
@@ -190,7 +175,7 @@
             <p>[DOPLNIT]</p>
           </details>
           <details>
-            <summary>Co se děje s mým e-mailem?</summary>
+            <summary><span>Co se děje s&nbsp;mým <span class="nowrap">e-mailem?</span></span></summary>
             <p>[DOPLNIT podle zásad]</p>
           </details>
           <details>
@@ -199,13 +184,28 @@
           </details>
         </div>
       </section>
+
+      <!-- 8. Poctivě o stavu projektu + závěrečná výzva -->
+      <section class="section wrap outro">
+        <div class="honest">
+          <h2 id="honest-title" class="honest-title">Poctivě o&nbsp;stavu projektu</h2>
+          <p>
+            Aplikace se teprve staví. To, co vidíte nahoře, je ukázka a&nbsp;umí jen pár lekcí. AI se může mýlit a&nbsp;žádná
+            aplikace nenahradí zdravý rozum. Nejsme banka ani policie. [DOPLNIT: kdo za projektem stojí]
+          </p>
+        </div>
+        <div class="closing">
+          <h2 id="closing-title">Dáme vám vědět, až to bude hotové</h2>
+          <a class="btn btn-primary" href="#zapis" data-jump-form>Zapsat se<span data-icon="ArrowRight"></span></a>
+        </div>
+      </section>
     </main>
 
     <!-- 8. Zápatí -->
     <footer class="site-footer">
       <div class="wrap footer-inner">
         <div>
-          <p class="logo">BabiAI</p>
+          <p class="logo">Babi<span>AI</span></p>
           <p>Za projektem stojí [DOPLNIT].</p>
           <p>Kontakt: <a href="mailto:[E-MAIL]">[E-MAIL]</a></p>
           <p><a href="zasady.html">Zásady zpracování údajů</a></p>
@@ -220,6 +220,6 @@
       </div>
     </footer>
 
-    <a class="sticky-cta btn" href="#zapis" data-jump-form hidden>Zapsat se</a>
+    <div class="sticky-cta" hidden><a class="btn btn-primary btn-block" href="#zapis" data-jump-form>Zapsat se</a></div>
   </body>
 </html>

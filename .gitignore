@@ -2,6 +2,6 @@ node_modules
 dist
 .env
 .env.local
-.claude/settings.local.json
+.claude/
 dist-preview
 preview

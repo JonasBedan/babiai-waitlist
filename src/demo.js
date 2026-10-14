@@ -27,14 +27,13 @@ const TOUR = [
   },
 ];
 
-const STATE_ICON = { done: 'Check', current: 'Play', locked: 'Lock', skipped: 'SkipForward', bonus: 'Gift' };
-const FEEDBACK = {
-  safe: { cls: 'note-ok', icon: 'CircleCheck' },
-  danger: { cls: 'note-warn', icon: 'TriangleAlert' },
-  partial: { cls: 'note-info', icon: 'Info' },
-};
 
-const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+// Escapování + česká typografie: nerozdělovat čísla („40 000 Kč“) a nenechávat jednopísmenné předložky na konci řádku.
+const esc = (t) =>
+  String(t)
+    .replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
+    .replace(/(?<=\d) (?=\d{3}\b|Kč)/g, '\u00a0')
+    .replace(/(?<=(?:^|[\s\u00a0„(])[aikosuvzAIKOSUVZ]) /g, '\u00a0');
 
 let root;
 let s; // stav z demo-logic.js
@@ -48,6 +47,7 @@ export function initDemo(el, { onJoinClick }) {
   onJoin = onJoinClick;
   root.addEventListener('click', onClick);
   root.addEventListener('keydown', onKey);
+  new ResizeObserver(fitLines).observe(root);
   root.addEventListener('pointerdown', () => trackOnce('demo_start'), { once: true });
   root.addEventListener('keydown', () => trackOnce('demo_start'), { once: true });
   reset(false);
@@ -85,7 +85,7 @@ function pathView() {
     const a = nodes[k];
     const my = (a.y + b.y) / 2;
     const solid = b.i <= s.cur;
-    return `<path d="M${a.x} ${a.y} C${a.x} ${my} ${b.x} ${my} ${b.x} ${b.y}" class="${solid ? 'line-done' : 'line-todo'}"/>`;
+    return `<path d="M${a.x} ${a.y} C${a.x} ${my} ${b.x} ${my} ${b.x} ${b.y}" data-from="${a.i}" data-to="${b.i}" class="${solid ? 'line-done' : 'line-todo'}"/>`;
   });
 
   const parts = items.map((it) => {
@@ -98,7 +98,7 @@ function pathView() {
     const shape = n.k === 'lesson' ? 'round' : 'square';
     return `<li class="node node--${st}" style="top:${it.y}px;left:${(it.x / W) * 100}%;--w:${(Math.min(it.x, W - it.x) / W) * 200}%">
       <button type="button" class="node-btn" data-i="${it.i}">
-        <span class="node-shape node-shape--${shape}">${icon(STATE_ICON[st], 30)}</span>
+        <span class="node-shape node-shape--${shape}" aria-hidden="true">${it.i + 1}</span>
         <span class="node-label">
           <span class="node-title">${esc(n.t)}</span><span class="sr-only">. </span>
           <span class="node-meta">${KIND_LABEL[n.k]} · <strong>${STATE_LABEL[st]}</strong></span>
@@ -112,11 +112,34 @@ function pathView() {
     </div>`;
 }
 
+// Čáry vedou od spodku popisku k hornímu okraji dalšího uzlu, aby nikdy nešly přes text.
+// Výška popisku závisí na šířce (zalamování), proto se měří až po vykreslení a při změně velikosti.
+function fitLines() {
+  const path = root.querySelector('.path');
+  if (!path) return;
+  // offsety místo getBoundingClientRect, aby výpočet nerozhodily animace (scale) uzlů
+  const nodes = Object.fromEntries(layout().items.filter((it) => it.type === 'node').map((it) => [it.i, it]));
+  const edges = (i) => {
+    const label = path.querySelector(`[data-i="${i}"] .node-label`);
+    const top = nodes[i].y - 36; // .node je posunutý o -36 px (polovina tvaru)
+    return { top: top - 4, bottom: top + label.offsetTop + label.offsetHeight + 4 };
+  };
+  for (const p of path.querySelectorAll('.path-lines path')) {
+    const a = nodes[p.dataset.from];
+    const b = nodes[p.dataset.to];
+    const y1 = edges(a.i).bottom;
+    const y2 = edges(b.i).top;
+    const my = (y1 + y2) / 2;
+    p.setAttribute('d', `M${a.x} ${y1} C${a.x} ${my} ${b.x} ${my} ${b.x} ${y2}`);
+    p.style.display = y2 - y1 < 8 ? 'none' : '';
+  }
+}
+
+// Zpětná vazba bez ikon a barevných boxů: nadpis a text pod linkou, barvu nese jen linka a nadpis.
 function feedbackBox(opt, id) {
-  const f = FEEDBACK[opt.k];
-  return `<div class="note ${f.cls}" id="${id}" tabindex="-1">
-      <span class="note-icon">${icon(f.icon)}</span>
-      <div><p class="note-title">${esc(opt.title)}</p><p>${esc(opt.fb)}</p></div>
+  return `<div class="feedback feedback--${opt.k}" id="${id}" tabindex="-1">
+      <p class="feedback-title">${esc(opt.title)}</p>
+      <p>${esc(opt.fb)}</p>
     </div>`;
 }
 
@@ -124,9 +147,8 @@ function optionList(options, picked, action) {
   return `<div class="choices">${options
     .map((o, k) => {
       const chosen = picked === k;
-      const mark = chosen ? `<span class="choice-mark">${icon(FEEDBACK[o.k].icon, 22)}<span class="sr-only">Vaše volba: </span></span>` : '';
       return `<button type="button" class="choice${chosen ? ` choice--${o.k}` : ''}" data-action="${action}" data-k="${k}"
-        ${picked !== null ? 'disabled' : ''}>${mark}<span>${esc(o.t)}</span></button>`;
+        ${picked !== null ? 'disabled' : ''}><span class="choice-letter" aria-hidden="true">${'ABCD'[k]}</span>${chosen ? '<span class="sr-only">Vaše volba: </span>' : ''}<span>${esc(o.t)}</span></button>`;
     })
     .join('')}</div>`;
 }
@@ -153,11 +175,8 @@ function lessonView() {
       <p class="eyebrow" id="lesson-start" tabindex="-1">Lekce · ${esc(NODES[LESSON_NODE].t)}</p>
       ${step.note ? `<p class="call-note">${esc(step.note)}</p>` : ''}
       <div class="call">
-        <div class="call-head">
-          <span class="call-avatar">${icon('Phone', 24)}</span>
-          <div><p class="call-name">${esc(LESSON.caller)}</p>
-          <p class="call-sub">${L.step === 0 ? 'Příchozí hovor' : 'Volá znovu'}</p></div>
-        </div>
+        <p class="call-head"><span class="call-sub">${L.step === 0 ? 'Příchozí hovor' : 'Volá znovu'}</span>
+          <span class="call-name">${esc(LESSON.caller)}</span></p>
         <ol class="bubbles" aria-label="Co říká volající">
           ${lines.map((l, k) => `<li class="bubble${k === L.shown - 1 && L.shown > 1 ? ' bubble--new' : ''}" ${k === L.shown - 1 ? 'id="bubble-last" tabindex="-1"' : ''}>„${esc(l)}“</li>`).join('')}
         </ol>
@@ -174,8 +193,7 @@ function lessonView() {
   if (L.step === 'rule') {
     return `<div class="lesson">${lessonHeader(LESSON.steps.length)}
       <p class="eyebrow">Pravidlo z lekce</p>
-      <div class="rule-card rule-card--small" tabindex="-1" id="lesson-rule">
-        <span class="rule-icon">${icon('PhoneOff', 32)}</span>
+      <div class="rule-card" tabindex="-1" id="lesson-rule">
         <p class="rule-lines">${LESSON.rule.map((r) => `<span>${esc(r)}</span>`).join('')}</p>
       </div>
       <p>Funguje to vždycky: když volá opravdu on, telefon zvedne. Když ne, právě jste zastavili podvod.</p>
@@ -185,15 +203,14 @@ function lessonView() {
   // Lekce hotová
   const unlocked = ui.unlocked.map((i) => NODES[i].t);
   const cont = `<button type="button" class="btn btn-primary btn-block" data-action="lesson-close">Pokračovat na cestu</button>`;
-  return `<div class="lesson lesson-done">${lessonHeader(LESSON_STEPS - 1)}
-    <span class="done-icon">${icon('CircleCheck', 56)}</span>
-    <h3 id="lesson-done" tabindex="-1">Lekce hotová</h3>
-    <div class="takeaways">
-      <p class="eyebrow">Co si odnášíte</p>
-      <ul>${LESSON.takeaways.map((x) => `<li>${icon('Check', 22)}<span>${esc(x)}</span></li>`).join('')}</ul>
-    </div>
-    ${unlocked.length ? `<div class="unlock-box">
-        <p class="unlock-title">${icon('Gift', 26)}Odemklo se: ${esc(unlocked.join(', '))}</p>
+  return `<div class="lesson lesson-done">
+    <p class="eyebrow">Lekce · ${esc(NODES[LESSON_NODE].t)}</p>
+    <h3 id="lesson-done" tabindex="-1">Hotovo.</h3>
+    <p class="takeaways-label">Co si z ní zapamatovat</p>
+    <ul class="takeaways">${LESSON.takeaways.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+    ${unlocked.length ? `<div class="unlock">
+        <p class="unlock-label">Nově odemčeno</p>
+        <p class="unlock-name">${esc(unlocked.join(', '))}</p>
         ${cont}
       </div>` : cont}
   </div>`;
@@ -234,8 +251,11 @@ function sheetView() {
       ${opt ? feedbackBox(opt, 'test-fb') : ''}
       ${opt ? `<button type="button" class="btn btn-primary btn-block" data-action="test-next">${last ? 'Zobrazit výsledek' : 'Další otázka'}</button>` : ''}`;
   } else if (testPassed(s)) {
-    body = `<div class="note note-ok"><span class="note-icon">${icon('CircleCheck')}</span>
-        <div><h3 id="dlg-title" class="note-title">Správně všechny tři.</h3><p>Tohle už umíte. Můžete skočit dopředu.</p></div></div>
+    body = `<div class="result result--ok">
+        <p class="eyebrow">Výsledek testu</p>
+        <h3 id="dlg-title" class="result-title">Správně všechny tři.</h3>
+        <p>Tohle už umíte. Můžete skočit dopředu.</p>
+      </div>
       <div class="sheet-actions">
         <button type="button" class="btn btn-primary btn-block" data-action="skip-confirm">Skočit na „${esc(target.t)}“</button>
         <button type="button" class="btn btn-secondary btn-block" data-action="sheet-close">Zůstat, kde jsem</button>
@@ -243,9 +263,11 @@ function sheetView() {
   } else {
     const plan = skipPlan(s, sh.target);
     const rec = NODES[plan.find((k) => NODES[k].k === 'lesson') ?? s.cur];
-    body = `<div class="note note-warn"><span class="note-icon">${icon('TriangleAlert')}</span>
-        <div><h3 id="dlg-title" class="note-title">Tentokrát to nevyšlo.</h3>
-        <p>Správně ${sh.score} ze ${QUESTIONS.length}. Doporučujeme nejdřív projít lekci „${esc(rec.t)}“. Test můžete zkusit znovu, kdykoli chcete.</p></div></div>
+    body = `<div class="result result--warn">
+        <p class="eyebrow">Výsledek testu · správně ${sh.score} ze ${QUESTIONS.length}</p>
+        <h3 id="dlg-title" class="result-title">Tentokrát to nevyšlo.</h3>
+        <p>Doporučujeme nejdřív projít lekci „${esc(rec.t)}“. Test můžete zkusit znovu, kdykoli chcete.</p>
+      </div>
       <div class="sheet-actions">
         ${s.cur === LESSON_NODE ? `<button type="button" class="btn btn-primary btn-block" data-action="lesson-open">Projít lekci</button>` : ''}
         <button type="button" class="btn btn-secondary btn-block" data-action="test-retry">Zkusit test znovu</button>
@@ -264,7 +286,7 @@ function dialogView() {
   const n = NODES[d.i];
   let body;
   if (d.type === 'full') {
-    body = `<span class="dialog-icon">${icon('Lock', 32)}</span>
+    body = `<p class="eyebrow">Připravujeme</p>
       <h3 id="dlg-title">Tohle už je v plné verzi.</h3>
       <p>„${esc(n.t)}“ připravujeme. Zapište se a dáme vám vědět.</p>
       <div class="sheet-actions">
@@ -274,7 +296,7 @@ function dialogView() {
   } else {
     let prev = d.i - 1;
     while (prev > 0 && NODES[prev].opt) prev--;
-    body = `<span class="dialog-icon">${icon('Lock', 32)}</span>
+    body = `<p class="eyebrow">Nepovinné cvičení</p>
       <h3 id="dlg-title">Zatím zamčeno</h3>
       <p>„${esc(n.t)}“ je nepovinné cvičení. Odemkne se, až dokončíte lekci „${esc(NODES[prev].t)}“.</p>
       <div class="sheet-actions">
@@ -303,6 +325,7 @@ function render({ focus, scroll, anim } = {}) {
     </div>`;
 
   const scroller = root.querySelector('.screen-scroll');
+  fitLines();
   scroller.scrollTop = scroll ?? prevScroll;
   setPageInert(!!modal);
 
@@ -310,7 +333,7 @@ function render({ focus, scroll, anim } = {}) {
     const target = root.querySelector(TOUR[ui.tour].target(s));
     if (target) {
       target.classList.add('tour-target');
-      if (scroller.contains(target)) scrollToShow(scroller, target, 0.25);
+      if (scroller.contains(target)) scrollAboveTour(scroller, target, root.querySelector('.tour'));
     }
   }
 
@@ -332,10 +355,14 @@ function keepVisible(scroller, el, smooth) {
   }
 }
 
-function scrollToShow(scroller, el, at) {
+// Cíl průvodce vystředit do volného místa nad kartou průvodce, ať ho karta nezakryje i s popiskem.
+function scrollAboveTour(scroller, el, tour) {
   const r = el.getBoundingClientRect();
   const sr = scroller.getBoundingClientRect();
-  scroller.scrollTop += r.top - sr.top - sr.height * at;
+  const ring = 14; // obrys .tour-target (outline + offset) a kousek vzduchu
+  const free = (tour ? tour.getBoundingClientRect().top : sr.bottom) - sr.top;
+  const slack = Math.max(ring, (free - r.height) / 2);
+  scroller.scrollTop += r.top - sr.top - slack;
 }
 
 // Modální dialog: zbytek stránky je po dobu dialogu neaktivní (inert), focus se vrátí na původní prvek.

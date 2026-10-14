@@ -56,8 +56,8 @@ function template(id) {
     <div><p class="note-title">${SUCCESS}</p>${PREVIEW ? '<p>V náhledu se e-mail neukládá.</p>' : ''}</div>
   </div>
   <div class="form-share">
-    <p>Nemáte e-mail? Pošlete stránku někomu blízkému.</p>
-    <button type="button" class="btn btn-secondary" data-share>${icon('Share2')}Poslat dál</button>
+    <span>Nemáte e-mail?</span>
+    <button type="button" class="link-btn" data-share>${icon('Share2', 20)}Poslat dál někomu blízkému</button>
     <p class="share-status" role="status"></p>
   </div>`;
 }

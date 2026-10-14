@@ -4,11 +4,13 @@ import { initDemo, reset } from './demo.js';
 import { initForms } from './form.js';
 import { hydrateIcons } from './icons.js';
 import { initShare } from './share.js';
+import { close as closeStage, initStage } from './stage.js';
 import { initTracking, trafficSource } from './track.js';
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
 function jumpToForm() {
+  closeStage({ restoreFocus: false });
   const target = document.getElementById('zapis');
   target.scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'start' });
   target.focus({ preventScroll: true });
@@ -16,7 +18,7 @@ function jumpToForm() {
 
 function initStickyCta() {
   const cta = document.querySelector('.sticky-cta');
-  const watched = document.querySelectorAll('.hero-form, .form-again, .hero-phone');
+  const watched = document.querySelectorAll('.hero-form, .closing, .hero-stage');
   const visible = new Set();
   const update = () => {
     cta.hidden = !(window.scrollY > 300 && visible.size === 0);
@@ -37,6 +39,7 @@ initAudience();
 initForms();
 initShare();
 initDemo(document.getElementById('demo'), { onJoinClick: jumpToForm });
+initStage();
 document.getElementById('demo-reset').addEventListener('click', () => reset());
 document.querySelectorAll('[data-jump-form]').forEach((a) =>
   a.addEventListener('click', (e) => {
