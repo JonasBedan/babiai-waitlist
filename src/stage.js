@@ -49,7 +49,9 @@ function peekCurrent() {
   const scroller = demo.querySelector('.screen-scroll');
   const cur = demo.querySelector('.node--current');
   if (!scroller || !cur) return;
-  scroller.scrollTop += cur.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 24;
+  // v náhledu je telefon zmenšený (zoom), posun ve stránce je potřeba přepočítat
+  const z = scroller.currentCSSZoom || 1;
+  scroller.scrollTop += (cur.getBoundingClientRect().top - scroller.getBoundingClientRect().top) / z - 24;
 }
 
 function open() {

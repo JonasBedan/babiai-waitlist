@@ -88,7 +88,7 @@ export const LESSON = {
       ],
     },
   ],
-  rule: ['Zavěste.', 'Zavolejte zpátky.', 'Na číslo, které máte v telefonu uložené.'],
+  rule: ['Zavěste.', 'Zavolejte zpátky', 'na číslo, které máte v telefonu uložené.'],
   takeaways: [
     'Hlas lze napodobit z pár vteřin videa na sociálních sítích.',
     'Spěch a „nikomu to neříkej“ jsou znaky podvodu.',

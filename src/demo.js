@@ -153,14 +153,25 @@ function optionList(options, picked, action) {
     .join('')}</div>`;
 }
 
-function lessonHeader(stepNo) {
-  const dots = Array.from({ length: LESSON_STEPS }, (_, k) =>
-    `<span class="${k < stepNo ? 'seg seg--done' : k === stepNo ? 'seg seg--now' : 'seg'}"></span>`).join('');
-  return `<div class="lesson-top">
-      <button type="button" class="link-btn" data-action="lesson-close">Zpět na cestu</button>
-      <p class="lesson-count">Krok ${stepNo + 1} z ${LESSON_STEPS}</p>
-    </div>
-    <div class="segs" aria-hidden="true">${dots}</div>`;
+function lessonStepNo() {
+  const L = ui.lesson;
+  return typeof L.step === 'number' ? L.step : L.step === 'rule' ? LESSON.steps.length : LESSON_STEPS - 1;
+}
+
+/* v lekci jedna hlavička: zpět, krok, název lekce a postup lekce (ne celé cesty) */
+function appBar(p) {
+  if (ui.view === 'path') {
+    return `<p class="app-title">Vaše cesta</p>
+        <p class="app-progress">Hotovo ${p.done} z ${p.total}${p.skipped ? `, přeskočeno ${p.skipped}` : ''}</p>
+        <div class="bar" aria-hidden="true"><span style="width:${((p.done + p.skipped) / p.total) * 100}%"></span></div>`;
+  }
+  const n = lessonStepNo();
+  return `<div class="app-top">
+          <button type="button" class="link-btn" data-action="lesson-close">Zpět na cestu</button>
+          <p class="app-progress">Krok ${n + 1} z ${LESSON_STEPS}</p>
+        </div>
+        <p class="app-title" id="lesson-start" tabindex="-1">${esc(NODES[LESSON_NODE].t)}</p>
+        <div class="bar" aria-hidden="true"><span style="width:${((n + 1) / LESSON_STEPS) * 100}%"></span></div>`;
 }
 
 function lessonView() {
@@ -171,8 +182,7 @@ function lessonView() {
     const allShown = L.shown >= step.lines.length;
     const opt = L.pick !== null ? step.o[L.pick] : null;
     const last = L.step === LESSON.steps.length - 1;
-    return `<div class="lesson">${lessonHeader(L.step)}
-      <p class="eyebrow" id="lesson-start" tabindex="-1">Lekce · ${esc(NODES[LESSON_NODE].t)}</p>
+    return `<div class="lesson">
       ${step.note ? `<p class="call-note">${esc(step.note)}</p>` : ''}
       <div class="call">
         <p class="call-head"><span class="call-sub">${L.step === 0 ? 'Příchozí hovor' : 'Volá znovu'}</span>
@@ -191,10 +201,10 @@ function lessonView() {
     </div>`;
   }
   if (L.step === 'rule') {
-    return `<div class="lesson">${lessonHeader(LESSON.steps.length)}
+    return `<div class="lesson">
       <p class="eyebrow">Pravidlo z lekce</p>
       <div class="rule-card" tabindex="-1" id="lesson-rule">
-        <p class="rule-lines">${LESSON.rule.map((r) => `<span>${esc(r)}</span>`).join('')}</p>
+        <p class="rule-lines"><span>${esc(LESSON.rule[0])}</span> <span>${esc(LESSON.rule[1])} <span class="rule-rest">${esc(LESSON.rule[2])}</span></span></p>
       </div>
       <p>Funguje to vždycky: když volá opravdu on, telefon zvedne. Když ne, právě jste zastavili podvod.</p>
       <button type="button" class="btn btn-primary btn-block" data-action="lesson-finish">Dokončit lekci</button>
@@ -204,7 +214,6 @@ function lessonView() {
   const unlocked = ui.unlocked.map((i) => NODES[i].t);
   const cont = `<button type="button" class="btn btn-primary btn-block" data-action="lesson-close">Pokračovat na cestu</button>`;
   return `<div class="lesson lesson-done">
-    <p class="eyebrow">Lekce · ${esc(NODES[LESSON_NODE].t)}</p>
     <h3 id="lesson-done" tabindex="-1">Hotovo.</h3>
     <p class="takeaways-label">Co si z ní zapamatovat</p>
     <ul class="takeaways">${LESSON.takeaways.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
@@ -315,9 +324,7 @@ function render({ focus, scroll, anim } = {}) {
   root.innerHTML = `<div class="screen"${anim ? ` data-anim="${anim}"` : ''}>
       ${tour ? tourView() : ''}
       <div class="app-bar" ${modal ? 'inert' : ''}>
-        <p class="app-title">${ui.view === 'path' ? 'Vaše cesta' : 'Lekce'}</p>
-        <p class="app-progress">Hotovo ${p.done} z ${p.total}${p.skipped ? `, přeskočeno ${p.skipped}` : ''}</p>
-        <div class="bar" aria-hidden="true"><span style="width:${((p.done + p.skipped) / p.total) * 100}%"></span></div>
+        ${appBar(p)}
       </div>
       <div class="screen-scroll" ${modal ? 'inert' : ''}>${ui.view === 'path' ? pathView() : lessonView()}</div>
       ${modal}
