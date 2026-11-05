@@ -1,12 +1,12 @@
 // Ikony Lucide jako SVG řetězce (obrys, tloušťka 2, zaoblené konce).
 import {
-  ArrowRight, BookOpen, Building2, Check, CircleCheck, Gamepad2, Gift, Info, Lock, MessageCircle, Mic,
-  Phone, PhoneOff, Play, RotateCcw, Share2, ShieldCheck, SkipForward, TriangleAlert, Users, X,
+  ArrowDown, ArrowRight, BookOpen, Building2, Check, CircleCheck, Gamepad2, Gift, Info, Lock, MessageCircle, Mic,
+  Phone, PhoneOff, Play, Printer, RotateCcw, Share2, ShieldCheck, SkipForward, TriangleAlert, Users, X,
 } from 'lucide';
 
 const ICONS = {
-  ArrowRight, BookOpen, Building2, Check, CircleCheck, Gamepad2, Gift, Info, Lock, MessageCircle, Mic,
-  Phone, PhoneOff, Play, RotateCcw, Share2, ShieldCheck, SkipForward, TriangleAlert, Users, X,
+  ArrowDown, ArrowRight, BookOpen, Building2, Check, CircleCheck, Gamepad2, Gift, Info, Lock, MessageCircle, Mic,
+  Phone, PhoneOff, Play, Printer, RotateCcw, Share2, ShieldCheck, SkipForward, TriangleAlert, Users, X,
 };
 
 export function icon(name, size = 24) {

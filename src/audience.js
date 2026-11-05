@@ -3,10 +3,11 @@ import { track } from './track.js';
 
 export const LEAD = {
   unknown:
-    'Krátké lekce v češtině, které naučí poznat falešný hovor, zprávu nebo video. Vyzkoušejte si ukázku přímo tady.',
-  senior: 'Krátké lekce, které vás naučí poznat falešný hovor, zprávu nebo video. Nic nemusíte umět předem.',
+    'Krátké lekce v češtině, které naučí poznat falešný hovor, zprávu nebo video. Až bude aplikace hotová, napíšeme vám jako prvním.',
+  senior:
+    'Krátké lekce, které vás naučí poznat falešný hovor, zprávu nebo video. Nic nemusíte umět předem. Až bude hotovo, napíšeme vám.',
   family:
-    'Krátké lekce, které naučí vaše rodiče poznat falešný hovor, zprávu nebo video. Bez strašení a bez složitých slov.',
+    'Krátké lekce, které naučí vaše rodiče poznat falešný hovor, zprávu nebo video. Bez strašení a bez složitých slov. Až bude hotovo, napíšeme vám.',
 };
 
 let current = 'unknown';
