@@ -1,0 +1,9 @@
+# Netlify: sestaví stránku Vitem a nasadí složku dist.
+# Proměnné VITE_* (Supabase, Plausible, VITE_SITE_URL) se nastavují v Netlify: Site configuration → Environment variables.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Vite 8 potřebuje Node 20.19+ nebo 22.12+
+  NODE_VERSION = "22"

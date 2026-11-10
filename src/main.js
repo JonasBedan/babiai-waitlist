@@ -29,7 +29,7 @@ initShare();
 initDemo(document.getElementById('demo'), { onJoinClick: jumpToForm });
 initStage();
 initScene();
-document.getElementById('demo-reset').addEventListener('click', () => reset());
+document.querySelectorAll('[data-demo-reset]').forEach((b) => b.addEventListener('click', () => reset()));
 document.querySelectorAll('[data-jump-form]').forEach((a) =>
   a.addEventListener('click', (e) => {
     e.preventDefault();

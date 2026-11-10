@@ -1,6 +1,6 @@
 /* BabiAI — kapitoly jednoho večera.
    Úvod a problém v noci, hovor na indigu, pravidlo na krémovém papíře, lekce na nebi, zápis zase v noci.
-   Vizuální řeč: modrotisk (bílý tisk na indigu, jako babiččina zástěra) a velké písmo Gloock.
+   Vizuální řeč: modrotisk (bílý tisk na indigu, jako babiččina zástěra) a velké písmo Newsreader.
    Červená patří jen zavěšení a slovu „podvod“.
    Pravidla ze zadání: písmo nikde pod 18 px, ovládací plochy aspoň 56 px, kontrast AA, focus 4 px. */
 
@@ -22,8 +22,8 @@
 
   /* role, které si kapitoly přepínají */
   --ink: #101631;
-  --ink-2: #454b66;
-  --ink-3: #5b6180;
+  --ink-2: #353b57;
+  --ink-3: #4b5170;
   --line: rgb(16 22 49 / 0.14);
   --line-strong: #7f849c;
   --surface: var(--paper-white);
@@ -32,7 +32,7 @@
   --on-ink: var(--paper-white);
   --locked-bg: #e7e3db;
   --night-text: #f4f0e6;
-  --night-muted: #b5bacd;
+  --night-muted: #ccd0de;
   --night-line: rgb(244 240 230 / 0.14);
 
   --warn-text: #7a2f05;
@@ -45,7 +45,8 @@
   --shadow: rgb(11 16 32 / 0.28);
   --backdrop: rgb(11 16 32 / 0.55);
 
-  --display: 'Gloock', 'Bodoni 72', Didot, Georgia, serif;
+  /* Newsreader 600: pevné tahy čitelné i z dálky, nízké háčky a čárky nad verzálkami nenarážejí do řádku nad */
+  --display: 'Newsreader', Georgia, serif;
   --sans: 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --spring: cubic-bezier(0.34, 1.4, 0.64, 1);
@@ -54,17 +55,18 @@
   --max: 1360px;
   --sheet: 28px;
 
-  --fs-small: 18px;
-  --fs-body: 20px;
-  --fs-lead: 21px;
-  --fs-h3: 24px;
+  --fs-small: 19px;
+  --fs-body: 21px;
+  --fs-lead: 22px;
+  --fs-h3: 25px;
 }
 @media (min-width: 700px) {
   :root {
     --pad: 40px;
     --sheet: 40px;
-    --fs-lead: 22px;
-    --fs-h3: 26px;
+    --fs-small: 20px;
+    --fs-lead: 24px;
+    --fs-h3: 28px;
   }
 }
 @media (min-width: 1100px) {
@@ -79,7 +81,7 @@
 .site-footer {
   --ink: var(--night-text);
   --ink-2: var(--night-muted);
-  --ink-3: #9da3ba;
+  --ink-3: #b3b8cb;
   --line: var(--night-line);
   --line-strong: #7c849f;
   --surface: #0a0f22;
@@ -114,9 +116,8 @@ body {
   margin: 0;
   background: var(--night);
   color: var(--ink);
-  font: 400 var(--fs-body) / 1.5 var(--sans);
+  font: 450 var(--fs-body) / 1.5 var(--sans);
   overflow-x: clip;
-  -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 h1,
@@ -502,7 +503,7 @@ a:hover {
   border-bottom: 1px solid var(--line);
 }
 .app-title {
-  font: 400 30px / 1.1 var(--display);
+  font: 600 30px / 1.1 var(--display);
 }
 .app-progress {
   margin: 6px 0 12px;
@@ -591,7 +592,7 @@ a:hover {
   color: var(--ink-3);
 }
 .path-section-title {
-  font: 400 28px / 1.1 var(--display);
+  font: 600 28px / 1.1 var(--display);
 }
 .node {
   position: absolute;
@@ -620,7 +621,7 @@ a:hover {
   border: 2px solid var(--ink);
   background: var(--surface);
   color: var(--ink);
-  font: 400 36px / 1 var(--display);
+  font: 600 36px / 1 var(--display);
   font-variant-numeric: lining-nums;
   transition: transform 180ms var(--ease);
 }
@@ -720,7 +721,7 @@ a:hover {
   list-style: none;
 }
 .bubble {
-  font: 400 24px / 1.25 var(--display);
+  font: 600 24px / 1.25 var(--display);
 }
 .bubble--new {
   animation: rise-in 360ms var(--ease);
@@ -843,7 +844,7 @@ a:hover {
 }
 .rule-card .rule-lines {
   display: grid;
-  font: 400 40px / 1 var(--display);
+  font: 600 40px / 1 var(--display);
 }
 .rule-card .rule-rest {
   display: block;
@@ -859,7 +860,7 @@ a:hover {
 }
 .lesson-done h3 {
   margin-bottom: 24px;
-  font: 400 48px / 1 var(--display);
+  font: 600 48px / 1 var(--display);
 }
 .takeaways-label {
   padding-bottom: 12px;
@@ -884,7 +885,7 @@ a:hover {
 }
 .takeaways li::before {
   content: counter(t);
-  font: 400 26px / 1 var(--display);
+  font: 600 26px / 1 var(--display);
 }
 .unlock {
   display: grid;
@@ -900,7 +901,7 @@ a:hover {
 }
 .unlock-name {
   margin-bottom: 16px;
-  font: 400 30px / 1.1 var(--display);
+  font: 600 30px / 1.1 var(--display);
 }
 .unlock .btn-primary {
   background: var(--on-ink);
@@ -1003,7 +1004,7 @@ a:hover {
   right: 10px;
 }
 .sheet-title {
-  font: 400 32px / 1.1 var(--display);
+  font: 600 32px / 1.1 var(--display);
 }
 .sheet .eyebrow + .sheet-title {
   margin-top: -8px;
@@ -1024,7 +1025,7 @@ a:hover {
 }
 .dialog h3 {
   margin-top: -8px;
-  font: 400 32px / 1.1 var(--display);
+  font: 600 32px / 1.1 var(--display);
 }
 
 /* animace ukázky */
@@ -1081,8 +1082,8 @@ a:hover {
   color: var(--night-text);
 }
 .logo {
-  font: 400 30px / 1 var(--display);
-  letter-spacing: -0.01em;
+  font: 600 30px / 1 var(--display);
+  letter-spacing: 0;
   color: inherit;
   text-decoration: none;
 }
@@ -1123,13 +1124,13 @@ a:hover {
   color: var(--ink-2);
 }
 .ch-label .num {
-  font: 400 22px / 1 var(--display);
+  font: 600 22px / 1 var(--display);
   letter-spacing: 0.02em;
 }
 
 .mega {
-  font: 400 52px / 0.94 var(--display);
-  letter-spacing: -0.012em;
+  font: 600 min(11.6vw, 52px) / 1 var(--display);
+  letter-spacing: 0;
   text-transform: uppercase;
   text-wrap: balance;
 }
@@ -1185,8 +1186,8 @@ a:hover {
   margin-top: 12px;
   padding: 0 12px;
   text-align: center;
-  font: 400 min(21.5vw, 96px) / 0.86 var(--display);
-  letter-spacing: -0.015em;
+  font: 600 min(18.5vw, 84px) / 1.02 var(--display);
+  letter-spacing: -0.005em;
   text-transform: uppercase;
 }
 .hero-title-line {
@@ -1262,7 +1263,7 @@ a:hover {
   line-height: 1.4;
 }
 .msg-body--quote {
-  font: 400 30px / 1.1 var(--display);
+  font: 600 30px / 1.1 var(--display);
 }
 .fc--call {
   width: 330px;
@@ -1289,7 +1290,7 @@ a:hover {
   border-radius: 10px;
   background: var(--paper-white);
   color: var(--red);
-  font: 400 24px / 1 var(--display);
+  font: 600 24px / 1 var(--display);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   transform: rotate(-7deg);
@@ -1350,7 +1351,7 @@ a:hover {
   padding: 0 var(--pad);
 }
 .lessons-mega {
-  font-size: 52px;
+  font-size: min(11.6vw, 52px);
 }
 .steps {
   display: grid;
@@ -1359,48 +1360,36 @@ a:hover {
   list-style: none;
 }
 .step {
-  display: grid;
-  grid-template-columns: 64px 1fr;
-  column-gap: 20px;
-  align-items: start;
   padding: 22px 0;
   border-top: 1px solid var(--line);
 }
 .step:last-child {
   border-bottom: 1px solid var(--line);
 }
-.step-node {
-  grid-row: span 2;
-  display: grid;
-  place-items: center;
-  width: 64px;
-  height: 64px;
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-  color: var(--ink);
-}
-.step-node--square {
-  border-radius: 18px;
-}
-.step--done .step-node {
-  background: var(--ink);
-  color: var(--on-ink);
-}
-.step--locked .step-node {
-  border-color: var(--line-strong);
-  background: rgb(127 135 160 / 0.16);
-  color: var(--ink-3);
-}
-.step--skipped .step-node {
-  border-style: dashed;
-}
 .step h3 {
-  align-self: end;
-  padding-top: 4px;
+  font-size: var(--fs-h3);
+  line-height: 1.2;
 }
 .step p {
-  margin-top: 6px;
+  margin-top: 8px;
   color: var(--ink-2);
+}
+
+/* nápověda k ukázce vedle telefonu: jen ve scéně na desktopu, jinak je pod telefonem */
+.lessons-try {
+  display: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 24px;
+  margin-top: 24px;
+}
+.lessons-try p {
+  flex: 1 1 18em;
+  font-size: var(--fs-small);
+  color: var(--ink-2);
+}
+.lessons-try .link-btn {
+  color: var(--ink);
 }
 
 /* ---------- 02 problém ---------- */
@@ -1435,11 +1424,11 @@ a:hover {
 }
 .face-num {
   grid-row: span 2;
-  font: 400 36px / 1 var(--display);
+  font: 600 36px / 1 var(--display);
   color: var(--ink-3);
 }
 .face h3 {
-  font: 400 34px / 1 var(--display);
+  font: 600 34px / 1 var(--display);
   text-transform: uppercase;
 }
 .face p {
@@ -1478,7 +1467,7 @@ a:hover {
   margin-top: 56px;
 }
 .rule-rest {
-  font: 400 34px / 1.08 var(--display);
+  font: 600 34px / 1.08 var(--display);
 }
 .rule-also {
   margin-top: 16px;
@@ -1567,7 +1556,7 @@ a:hover {
 }
 .print-card-rule {
   margin-top: auto;
-  font: 400 clamp(32px, 9vw, 52px) / 0.95 var(--display);
+  font: 600 clamp(32px, 9vw, 52px) / 1.02 var(--display);
   text-transform: uppercase;
 }
 .print-card-rest {
@@ -1579,7 +1568,7 @@ a:hover {
   position: absolute;
   top: 18px;
   right: 22px;
-  font: 400 22px / 1 var(--display);
+  font: 600 22px / 1 var(--display);
 }
 .card-actions {
   display: grid;
@@ -1686,7 +1675,7 @@ a:hover {
 }
 .side-title {
   margin-bottom: 16px;
-  font: 400 32px / 1 var(--display);
+  font: 600 32px / 1 var(--display);
   text-transform: uppercase;
 }
 .honest {
@@ -1832,8 +1821,8 @@ a:hover {
 .wordmark {
   margin: 56px 0 0;
   padding: 0 calc(var(--pad) / 2);
-  font: 400 28vw / 0.8 var(--display);
-  letter-spacing: -0.03em;
+  font: 600 28vw / 0.85 var(--display);
+  letter-spacing: -0.02em;
   text-align: center;
   white-space: nowrap;
   user-select: none;
@@ -1922,7 +1911,7 @@ a:hover {
   padding: 26px 24px 30px;
 }
 .who-body h3 {
-  font: 400 38px / 1 var(--display);
+  font: 600 38px / 1 var(--display);
   text-transform: uppercase;
 }
 .who-body p {
@@ -1986,21 +1975,112 @@ a:hover {
   font-size: var(--fs-small);
   color: var(--ink-2);
 }
+/* telefon jako skutečný telefon: titanový rámeček (box-shadow), černý lem, ostrůvek, tlačítka na bocích */
 .phone {
+  --frame: #a29d93;
+  position: relative;
   width: min(390px, 100%);
   height: min(800px, 84svh);
   min-height: 600px;
-  padding: 10px;
-  border: 2px solid var(--night-text);
-  border-radius: 54px;
-  background: var(--paper-white);
-  box-shadow: 0 60px 100px -50px rgb(0 0 0 / 0.6);
+  padding: 11px;
+  border-radius: 62px;
+  background: #050608;
+  box-shadow:
+    inset 0 0 0 1.5px #2b2d33,
+    0 0 0 1px #3b3a37,
+    0 0 0 3.5px var(--frame),
+    0 0 0 4.5px #6d6a64,
+    0 60px 100px -40px rgb(0 0 0 / 0.65);
+}
+/* levá tlačítka (akční, hlasitost +, −) jedním pruhem, vpravo boční tlačítko */
+.phone::before,
+.phone::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  border-radius: 2px;
+  pointer-events: none;
+}
+.phone::before {
+  left: -8px;
+  top: 150px;
+  height: 196px;
+  background: linear-gradient(
+    var(--frame) 0 30px,
+    transparent 30px 58px,
+    var(--frame) 58px 124px,
+    transparent 124px 138px,
+    var(--frame) 138px
+  );
+  border-radius: 2px 0 0 2px;
+}
+.phone::after {
+  right: -8px;
+  top: 214px;
+  height: 100px;
+  background: var(--frame);
+  border-radius: 0 2px 2px 0;
+}
+.status {
+  position: relative;
+  z-index: 6;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  flex: none;
+  height: 54px;
+  padding: 0 26px 0 34px;
+  color: var(--ink);
+  pointer-events: none;
+}
+.status-time {
+  font: 600 17px / 1 var(--sans);
+  letter-spacing: -0.01em;
+}
+.island {
+  width: 122px;
+  height: 35px;
+  border-radius: 18px;
+  background: #050608;
+}
+.status-icons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}
+.status-icons svg {
+  fill: currentColor;
+}
+@media (max-width: 359px) {
+  .status {
+    padding: 0 18px 0 24px;
+  }
+  .island {
+    width: 92px;
+    height: 30px;
+  }
+}
+.home-ind {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  z-index: 20;
+  width: 136px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--ink);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.phone .tour {
+  bottom: 24px;
 }
 /* ukázka má vlastní světlé barvy, ať je stejná na noční i nebeské ploše */
 .phone {
   --ink: #101631;
-  --ink-2: #454b66;
-  --ink-3: #5b6180;
+  --ink-2: #3a4060;
+  --ink-3: #4b5170;
   --line: rgb(16 22 49 / 0.14);
   --line-strong: #7f849c;
   --surface: var(--paper-white);
@@ -2012,6 +2092,11 @@ a:hover {
   --warn-line: #c2611f;
   --ok-text: #1f4d29;
   --ok-line: #3b7f49;
+  /* ukázka má vlastní škálu, rozložení obrazovky je na ni vyladěné */
+  --fs-small: 19px;
+  --fs-body: 20px;
+  --fs-lead: 22px;
+  --fs-h3: 26px;
   color: var(--ink);
 }
 .phone :focus-visible {
@@ -2023,7 +2108,7 @@ a:hover {
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  border-radius: 44px;
+  border-radius: 51px;
   background: var(--paper-white);
   font-size: var(--fs-body);
   line-height: 1.45;
@@ -2041,15 +2126,24 @@ a:hover {
     width: 100%;
     height: 440px;
     min-height: 0;
-    padding: 8px 8px 0;
-    border-bottom: 0;
-    border-radius: 44px 44px 0 0;
-    box-shadow: 0 -30px 60px -30px rgb(0 0 0 / 0.6);
+    padding: 9px 9px 0;
+    border-radius: 52px 52px 0 0;
     -webkit-mask-image: linear-gradient(#000 62%, transparent);
     mask-image: linear-gradient(#000 62%, transparent);
   }
   .hero-stage:not(.is-open) .screen {
-    border-radius: 36px 36px 0 0;
+    border-radius: 43px 43px 0 0;
+  }
+  .phone::before,
+  .phone::after {
+    display: none;
+  }
+  .is-open .status,
+  .is-open .home-ind {
+    display: none;
+  }
+  .is-open .phone .tour {
+    bottom: 12px;
   }
   .hero-stage:not(.is-open) .tour,
   .hero-stage:not(.is-open) .stage-foot {
@@ -2092,7 +2186,7 @@ a:hover {
     border-bottom: 1px solid var(--line);
   }
   .stage-bar-title {
-    font: 400 28px / 1.1 var(--display);
+    font: 600 28px / 1.1 var(--display);
   }
   .stage-close {
     min-height: 56px;
@@ -2116,6 +2210,7 @@ a:hover {
     padding: 0;
     border: 0;
     border-radius: 0;
+    background: var(--paper-white);
     box-shadow: none;
     -webkit-mask-image: none;
     mask-image: none;
@@ -2157,7 +2252,7 @@ a:hover {
     padding-top: 112px;
   }
   .hero-title {
-    font-size: 11.6vw;
+    font-size: 10.4vw;
   }
   .hero-title-line {
     display: inline;
@@ -2206,13 +2301,9 @@ a:hover {
     grid-template-columns: 1fr;
     border-bottom: 1px solid var(--line);
   }
-  .face-num,
-  .step-node {
+  .face-num {
     grid-row: auto;
     margin-bottom: 20px;
-  }
-  .step h3 {
-    padding-top: 0;
   }
   .card-actions {
     grid-template-columns: 1fr 1fr;
@@ -2236,7 +2327,7 @@ a:hover {
 @media (min-width: 1100px) {
   .hero-title {
     margin-top: 0;
-    font-size: min(11.4vw, 210px);
+    font-size: min(10.2vw, 188px);
   }
   .deck {
     height: 520px;
@@ -2429,6 +2520,8 @@ a:hover {
   .intro-stage {
     --a: 0;
     --b: 0;
+    /* o kolik je telefon na první obrazovce níž: horní hrana těsně pod nadpisem */
+    --drop: calc(35svh - 80px);
     position: sticky;
     top: 0;
     display: block;
@@ -2456,26 +2549,46 @@ a:hover {
     inset: 31svh 0 25svh;
     height: auto;
   }
+  /* telefon je hlavní objekt úvodu: --ps (scene.js) ho zvětší podle výšky obrazovky, nikdy pod 1 */
   .hero-stage {
     position: absolute;
     left: 50%;
     top: 50%;
     margin: 0;
-    transform: translate(-50%, -50%) translate(calc(var(--b) * 22vw), calc((1 - var(--a)) * 56svh))
-      scale(calc(0.84 + var(--a) * 0.16));
+    transform: translate(-50%, -50%) translate(calc(var(--b) * 22vw), calc((1 - var(--a)) * var(--drop)))
+      scale(calc(var(--ps, 1) * (0.94 + var(--a) * 0.06)));
   }
   .phone {
-    height: min(800px, calc(100svh - 136px));
+    width: 400px;
+    /* o kus menší než obrazovka, na nízkých noteboocích ale aspoň 640 px, ať se ukázka dá ovládat */
+    height: min(860px, calc(min(100svh - 48px, max((100svh - 72px) * 0.88, 640px)) / var(--ps, 1)));
     min-height: 0;
   }
-  .stage-foot {
-    opacity: var(--d, 0);
-    --ink-2: #3d4462;
-    color: var(--ink);
+  /* než telefon dojede, je to jen náhled: kolečko myši posouvá stránku, ne ukázku, a klik do něj skočí na ukázku */
+  .intro-stage:not(.is-lessons) .phone {
+    pointer-events: none;
   }
-  .is-lessons .stage-foot,
-  .is-lessons .stage-foot .link-btn {
-    color: #101631;
+  .intro-stage:not(.is-past) .phone-wrap {
+    cursor: pointer;
+  }
+  .phone {
+    transition: translate 400ms var(--ease), box-shadow 400ms var(--ease);
+  }
+  .intro-stage:not(.is-past) .phone-wrap:hover .phone {
+    translate: 0 -14px;
+    box-shadow:
+      inset 0 0 0 1.5px #2b2d33,
+      0 0 0 1px #3b3a37,
+      0 0 0 3.5px var(--frame),
+      0 0 0 4.5px #6d6a64,
+      0 90px 130px -40px rgb(0 0 0 / 0.85);
+  }
+  /* nápověda k ukázce je ve scéně ve sloupci vedle telefonu */
+  .stage-foot {
+    display: none;
+  }
+  .lessons-try {
+    display: flex;
   }
   .hero-foot {
     position: absolute;
@@ -2485,7 +2598,36 @@ a:hover {
     transform: translateY(calc(var(--a) * 60px));
   }
   .hero-sub {
-    max-width: min(21em, calc(50vw - 260px));
+    max-width: min(21em, calc(50vw - 188px * var(--ps, 1) - var(--pad) - 40px));
+  }
+  /* úzké desktopy: tlačítka pod sebou, ať nezajedou pod telefon; karty menší, ať nesahají do textu */
+  @media (max-width: 1499px) {
+    .hero-actions {
+      display: grid;
+      gap: 12px;
+    }
+    /* hovor je hlavní věta úvodu: nesmí zajet pod telefon */
+    .fc-8 { --x: 29% !important; }
+    .fc-9 { --x: 31% !important; }
+  }
+  /* nízké notebooky: karty výš a menší, ať nesahají do textu pod nimi */
+  @media (max-height: 820px) {
+    .deck {
+      inset: 26svh 0 32svh;
+    }
+    .fc {
+      --k: 0.86;
+    }
+  }
+  @media (max-width: 1299px) {
+    .fc {
+      --k: 0.8;
+    }
+    .fc-10 {
+      display: none;
+    }
+    .fc-8 { --x: 32% !important; }
+    .fc-7 { --x: -31% !important; }
   }
   .is-past .hero-foot,
   .is-past .intro-top {
@@ -2495,8 +2637,8 @@ a:hover {
   /* lekce: světlá kapitola vedle telefonu */
   .intro-lessons {
     --ink: #101631;
-    --ink-2: #454b66;
-    --ink-3: #5b6180;
+    --ink-2: #353b57;
+    --ink-3: #4b5170;
     --line: rgb(16 22 49 / 0.14);
     --line-strong: #7f849c;
     --on-ink: var(--sky);
@@ -2525,22 +2667,35 @@ a:hover {
     margin-top: 28px;
   }
   .intro-lessons .step {
-    grid-template-columns: 56px 1fr;
     border-bottom: 0;
-    padding: 14px 0;
+    padding: 16px 0;
   }
   .intro-lessons .step:last-child {
     border-bottom: 1px solid var(--line);
   }
-  .intro-lessons .step-node {
-    grid-row: span 2;
-    width: 56px;
-    height: 56px;
-    margin: 0;
-  }
   .intro-lessons .step p {
-    font-size: var(--fs-small);
-    margin-top: 2px;
+    margin-top: 4px;
+  }
+  @media (max-height: 820px) {
+    .lessons-mega {
+      font-size: min(5vw, 8svh, 92px);
+    }
+    .intro-lessons .steps {
+      margin-top: 16px;
+    }
+    .intro-lessons .step {
+      padding: 10px 0;
+    }
+    .intro-lessons .step p {
+      font-size: var(--fs-small);
+      margin-top: 2px;
+    }
+    .intro-lessons .ch-label {
+      margin-bottom: 16px;
+    }
+    .lessons-try {
+      margin-top: 14px;
+    }
   }
   .intro-end {
     bottom: 100svh;
@@ -2554,7 +2709,7 @@ a:hover {
 /* nízké notebooky */
 @media (min-width: 1100px) and (max-height: 860px) {
   .hero-title {
-    font-size: min(10.4vw, 180px);
+    font-size: min(9.3vw, 161px);
   }
 }
 
@@ -2692,7 +2847,7 @@ a:hover {
   padding-bottom: 96px;
 }
 .prose h1 {
-  font: 400 56px / 0.95 var(--display);
+  font: 600 56px / 1.02 var(--display);
   text-transform: uppercase;
   margin-bottom: 16px;
 }

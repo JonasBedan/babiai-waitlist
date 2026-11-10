@@ -14,6 +14,8 @@ function initIntro() {
   const intro = document.querySelector('.intro');
   const stage = intro?.querySelector('.intro-stage');
   const deck = intro?.querySelector('.deck-inner');
+  const title = intro?.querySelector('.hero-title');
+  const phone = intro?.querySelector('.phone');
   if (!intro || !stage) return;
   let raf = 0;
   let mx = 0;
@@ -34,6 +36,18 @@ function initIntro() {
       // a: úvod se rozjede a telefon vyjede doprostřed, b: telefon uhne doprava a vedle něj se objeví lekce
       const a = clamp(p / 0.5);
       const b = clamp((p - 0.45) / 0.4);
+      // telefon roste s výškou obrazovky (návrh pro 800 px), menší než 1 nikdy: text zůstane aspoň 18 px
+      const ps = Math.min(1.22, Math.max(1, ((innerHeight - 72) * 0.88) / 800));
+      stage.style.setProperty('--ps', ps.toFixed(4));
+      // na první obrazovce začíná telefon kousek pod nadpisem (offset* ignorují transformace)
+      if (title && phone) {
+        const h = phone.offsetHeight * ps * 0.94;
+        let top = 0;
+        for (let el = title; el && el !== stage; el = el.offsetParent) top += el.offsetTop;
+        // + kus na dotažnice (J, čárka) pod řádkem
+        const want = top + title.offsetHeight * 1.09 + 40 + innerHeight * 0.09;
+        stage.style.setProperty('--drop', `${Math.round(want - (innerHeight - h) / 2)}px`);
+      }
       stage.style.setProperty('--a', a.toFixed(4));
       stage.style.setProperty('--b', b.toFixed(4));
       // barva pozadí se přelije rychle, text lekcí naskočí až na hotové nebe
@@ -42,6 +56,8 @@ function initIntro() {
       stage.classList.toggle('is-past', a > 0.5);
       stage.classList.toggle('is-lessons', b > 0.5);
     } else {
+      stage.style.removeProperty('--ps');
+      stage.style.removeProperty('--drop');
       stage.style.removeProperty('--a');
       stage.style.removeProperty('--b');
       stage.style.removeProperty('--c');
@@ -72,17 +88,27 @@ function initIntro() {
   request();
 
   // „Vyzkoušet ukázku“: ve scéně na její konec, jinak k telefonu
+  const jumpToDemo = () => {
+    const behavior = reduce.matches ? 'auto' : 'smooth';
+    if (sceneMQ.matches) {
+      scrollTo({ top: intro.offsetTop + intro.offsetHeight - innerHeight * 1.05, behavior });
+    } else {
+      intro.querySelector('.hero-stage').scrollIntoView({ behavior, block: 'start' });
+    }
+  };
   document.querySelectorAll('[data-jump-demo]').forEach((a) =>
     a.addEventListener('click', (e) => {
       e.preventDefault();
-      const behavior = reduce.matches ? 'auto' : 'smooth';
-      if (sceneMQ.matches) {
-        scrollTo({ top: intro.offsetTop + intro.offsetHeight - innerHeight * 1.05, behavior });
-      } else {
-        intro.querySelector('.hero-stage').scrollIntoView({ behavior, block: 'start' });
-      }
+      jumpToDemo();
     }),
   );
+  // ve scéně je telefon do dojetí jen náhled (pointer-events v CSS), klik na něj dopadne na obal
+  intro.querySelector('.phone-wrap')?.addEventListener('click', (e) => {
+    if (sceneMQ.matches && !stage.classList.contains('is-lessons') && !e.target.closest('.phone .screen *')) {
+      track('demo_preview_click');
+      jumpToDemo();
+    }
+  });
 }
 
 // ---------- odhalování: nadpisy po řádcích, ostatní jemně zespodu ----------

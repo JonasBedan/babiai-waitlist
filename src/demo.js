@@ -316,12 +316,24 @@ function dialogView() {
     <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title">${body}</div>`;
 }
 
+// Stavový řádek telefonu: jen obrázek, ať ukázka vypadá jako skutečný telefon (na mobilu přes celou obrazovku skrytý).
+const STATUS_BAR = `<div class="status" aria-hidden="true">
+  <span class="status-time">9:41</span>
+  <span class="island"></span>
+  <span class="status-icons">
+    <svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg viewBox="0 0 16 12" width="16" height="12"><path d="M8 2.4c2.3 0 4.4.9 6 2.4l1.2-1.2A10.2 10.2 0 0 0 8 .7C5.2.7 2.7 1.8.8 3.6L2 4.8a8.5 8.5 0 0 1 6-2.4Zm0 3.4c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 4.1c-1.8 0-3.5.7-4.8 1.9l1.2 1.2c1-.9 2.2-1.4 3.6-1.4Zm0 3.4c-.6 0-1.2.2-1.6.6L8 11.4l1.6-1.6c-.4-.4-1-.6-1.6-.6Z"/></svg>
+    <svg viewBox="0 0 27 13" width="27" height="13"><rect x="0.5" y="0.5" width="23" height="12" rx="3.8" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="9" rx="2.5"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2Z" opacity=".45"/></svg>
+  </span>
+</div>`;
+
 function render({ focus, scroll, anim } = {}) {
   const prevScroll = root.querySelector('.screen-scroll')?.scrollTop ?? 0;
   const p = progress(s);
   const modal = s.sheet ? sheetView() : ui.dialog ? dialogView() : '';
   const tour = ui.tour !== null && ui.view === 'path' && !modal;
   root.innerHTML = `<div class="screen"${anim ? ` data-anim="${anim}"` : ''}>
+      ${STATUS_BAR}
       ${tour ? tourView() : ''}
       <div class="app-bar" ${modal ? 'inert' : ''}>
         ${appBar(p)}
@@ -329,6 +341,7 @@ function render({ focus, scroll, anim } = {}) {
       <div class="screen-scroll" ${modal ? 'inert' : ''}>${ui.view === 'path' ? pathView() : lessonView()}</div>
       ${modal}
       <p class="sr-only" aria-live="polite" id="demo-live"></p>
+      <span class="home-ind" aria-hidden="true"></span>
     </div>`;
 
   const scroller = root.querySelector('.screen-scroll');
@@ -351,14 +364,18 @@ function render({ focus, scroll, anim } = {}) {
   }
 }
 
+// Telefon bývá zvětšený (transform scale ve scéně úvodu): rozdíly z getBoundingClientRect převést na px posunu.
+const scaleOf = (scroller, sr) => sr.height / scroller.offsetHeight || 1;
+
 function keepVisible(scroller, el, smooth) {
   const r = el.getBoundingClientRect();
   const sr = scroller.getBoundingClientRect();
   if (r.top < sr.top || r.bottom > sr.bottom) {
+    const top = (r.top - sr.top - sr.height / 3) / scaleOf(scroller, sr);
     if (smooth && !reduceMotion()) {
       // Krátce ukázat starou pozici a pak plynule sjet na nový cíl, ať je skok vidět.
-      requestAnimationFrame(() => scroller.scrollBy({ top: r.top - sr.top - sr.height / 3, behavior: 'smooth' }));
-    } else scroller.scrollTop += r.top - sr.top - sr.height / 3;
+      requestAnimationFrame(() => scroller.scrollBy({ top, behavior: 'smooth' }));
+    } else scroller.scrollTop += top;
   }
 }
 
@@ -369,7 +386,7 @@ function scrollAboveTour(scroller, el, tour) {
   const ring = 14; // obrys .tour-target (outline + offset) a kousek vzduchu
   const free = (tour ? tour.getBoundingClientRect().top : sr.bottom) - sr.top;
   const slack = Math.max(ring, (free - r.height) / 2);
-  scroller.scrollTop += r.top - sr.top - slack;
+  scroller.scrollTop += (r.top - sr.top - slack) / scaleOf(scroller, sr);
 }
 
 // Modální dialog: zbytek stránky je po dobu dialogu neaktivní (inert), focus se vrátí na původní prvek.

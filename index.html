@@ -29,7 +29,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&family=Gloock&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@300..800&family=Newsreader:opsz,wght@6..72,500..700&display=swap"
     />
     <link rel="stylesheet" href="/src/style.css" />
     <script type="module" src="/src/main.js"></script>
@@ -111,7 +111,7 @@
               </div>
               <div class="stage-foot">
                 <p class="stage-hint">Klepněte na zamčenou lekci a&nbsp;zkuste skočit dopředu.</p>
-                <button type="button" class="link-btn stage-reset" id="demo-reset">
+                <button type="button" class="link-btn stage-reset" data-demo-reset>
                   <span data-icon="RotateCcw" data-size="20"></span>Začít ukázku znovu
                 </button>
               </div>
@@ -137,21 +137,24 @@
             </h2>
             <ol class="steps">
               <li class="step step--done">
-                <span class="step-node" aria-hidden="true"><span data-icon="Check" data-size="28"></span></span>
                 <h3>Krátké lekce</h3>
                 <p>Tři až pět minut, jeden příběh, jedno pravidlo. Nic se nepamatuje nazpaměť.</p>
               </li>
               <li class="step step--locked">
-                <span class="step-node step-node--square" aria-hidden="true"><span data-icon="Lock" data-size="26"></span></span>
                 <h3>Odemykání po krocích</h3>
                 <p>Hry a&nbsp;cvičení s&nbsp;AI se otevírají postupně, aby toho nebylo moc najednou.</p>
               </li>
               <li class="step step--skipped">
-                <span class="step-node" aria-hidden="true"><span data-icon="SkipForward" data-size="26"></span></span>
                 <h3>Přeskočte, co už umíte</h3>
                 <p>Krátký test a&nbsp;jdete dál. Přeskočené lekce zůstanou na cestě.</p>
               </li>
             </ol>
+            <div class="lessons-try">
+              <p>Ukázka vpravo je živá. Klepněte na zamčenou lekci a&nbsp;zkuste skočit dopředu.</p>
+              <button type="button" class="link-btn" data-demo-reset>
+                <span data-icon="RotateCcw" data-size="20"></span>Začít ukázku znovu
+              </button>
+            </div>
           </div>
         </div>
         <span class="intro-end" id="ukazka" aria-hidden="true"></span>
