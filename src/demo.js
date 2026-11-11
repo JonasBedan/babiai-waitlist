@@ -18,13 +18,14 @@ const newLesson = () => ({ step: 0, shown: 1, pick: null });
 const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Průvodce ukázkou: na co ukazuje (selektor) a co říká.
+// Během průvodce je zbytek ukázky neaktivní a průvodce končí rovnou v lekci, ať ji nikdo nemusí hledat.
 const TOUR = [
   { target: () => '.app-bar', text: 'Tady vidíte, jak daleko jste. Počítají se hotové i přeskočené kroky.' },
-  { target: (st) => `[data-i="${st.cur}"]`, text: 'Tahle lekce je teď na řadě. Klepnutím ji otevřete, zabere asi tři minuty.' },
   {
     target: (st) => `[data-i="${NODES.findIndex((n, i) => canSkipTo(st, i))}"]`,
     text: 'Zamčené lekce můžete přeskočit. Krátký test ověří, že to už umíte.',
   },
+  { target: (st) => `[data-i="${st.cur}"]`, text: 'Tahle lekce je teď na řadě. Zabere asi tři minuty, pojďme na ni.' },
 ];
 
 
@@ -232,8 +233,8 @@ function tourView() {
       <p class="tour-count" id="tour-title">Průvodce · ${k + 1} ze ${TOUR.length}</p>
       <p class="tour-text" aria-live="polite">${esc(TOUR[k].text)}</p>
       <div class="tour-actions">
-        <button type="button" class="btn btn-primary" data-action="tour-next">${last ? 'Vyzkoušet' : 'Další'}</button>
-        ${last ? '' : '<button type="button" class="link-btn" data-action="tour-end">Přeskočit průvodce</button>'}
+        <button type="button" class="btn btn-primary" data-action="tour-next">${last ? 'Začít lekci' : 'Další'}</button>
+        ${last ? '' : '<button type="button" class="link-btn" data-action="tour-end">Rovnou do lekce</button>'}
       </div>
     </section>`;
 }
@@ -335,10 +336,10 @@ function render({ focus, scroll, anim } = {}) {
   root.innerHTML = `<div class="screen"${anim ? ` data-anim="${anim}"` : ''}>
       ${STATUS_BAR}
       ${tour ? tourView() : ''}
-      <div class="app-bar" ${modal ? 'inert' : ''}>
+      <div class="app-bar" ${modal || tour ? 'inert' : ''}>
         ${appBar(p)}
       </div>
-      <div class="screen-scroll" ${modal ? 'inert' : ''}>${ui.view === 'path' ? pathView() : lessonView()}</div>
+      <div class="screen-scroll" ${modal || tour ? 'inert' : ''}>${ui.view === 'path' ? pathView() : lessonView()}</div>
       ${modal}
       <p class="sr-only" aria-live="polite" id="demo-live"></p>
       <span class="home-ind" aria-hidden="true"></span>
@@ -501,7 +502,7 @@ function act(action, k) {
     case 'tour-next':
       if (ui.tour === TOUR.length - 1) {
         endTour('done');
-        render({ focus: `[data-i="${s.cur}"]` });
+        openLesson();
       } else {
         ui.tour++;
         render({ focus: '#tour-card' });
@@ -509,7 +510,7 @@ function act(action, k) {
       break;
     case 'tour-end':
       endTour('skip');
-      render({ focus: `[data-i="${s.cur}"]` });
+      openLesson();
       break;
     case 'lesson-more':
       ui.lesson.shown++;

@@ -157,7 +157,7 @@ function initFloat() {
     { rootMargin: '-92% 0px 0px 0px' },
   );
   document.querySelectorAll('[data-chapter]').forEach((ch) => {
-    ch.dataset.tone = ch.classList.contains('ch--night') || ch.classList.contains('ch--indigo') ? 'dark' : 'light';
+    ch.dataset.tone = ch.classList.contains('ch--indigo') ? 'dark' : 'light';
     under.observe(ch);
   });
 }
